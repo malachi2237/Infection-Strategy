@@ -1,0 +1,107 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "TileSystem.h"
+#include "InfectionStrategyGameMode.h"
+// Sets default values for this component's properties
+UTileSystem::UTileSystem()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = false;
+
+	// ...
+}
+
+// Called when the game starts
+void UTileSystem::BeginPlay()
+{
+	Super::BeginPlay();
+
+	float tileScale = tileWidth / 100.0f;
+	int xOffset = -gridWidth / 2;
+	int yOffset = gridHeight / 2;
+
+	StaticCast<AInfectionStrategyGameMode *>(GetWorld()->GetAuthGameMode())->tileSystem = this;
+
+	for (int x = 0; x < gridHeight; x++)
+	{
+		tileGrid.Add(TArray<ATileActor*>());
+
+		for (int y = 0; y < gridWidth; y++)
+		{
+			FVector const *spawnLocation = new FVector((yOffset - y) * tileWidth, (x + xOffset) * tileWidth, 0.0f);
+
+			auto newTileActor = (ATileActor*)GetWorld()->SpawnActor(tileTemplate, spawnLocation);
+
+			newTileActor->SetCoordinates(x, y);
+			tileGrid[x].Add(newTileActor);
+		}
+	}
+
+	for (int x = 0; x < gridWidth; x++)
+	{
+		for (int y = 0; y < gridHeight; y++)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				tileGrid[x][y]->neighbors[i] = GetNeighbor(x, y, (Neighbor)i);
+			}
+		}
+	}
+}
+
+ATileActor* UTileSystem::GetNeighbor(int x, int y, Neighbor neighborType)
+{
+	ATileActor* selectedNeighbor = nullptr;
+
+	switch (neighborType)
+	{
+	case Up:
+		if (y > 0)
+			selectedNeighbor = tileGrid[x][y - 1];
+		break;
+	case Down:
+		if (y + 1 < gridHeight)
+			selectedNeighbor = tileGrid[x][y + 1];
+		break;
+	case Left:
+		if (x > 0)
+			selectedNeighbor = tileGrid[x - 1][y];
+		break;
+	case Right:
+		if (x + 1 < gridWidth)
+			selectedNeighbor = tileGrid[x + 1][y];
+		break;
+	case TopLeft:
+		if (y > 0 && x > 0)
+			selectedNeighbor = tileGrid[x - 1][y - 1];
+		break;
+	case TopRight:
+		if (y > 0 && x + 1 < gridWidth)
+			selectedNeighbor = tileGrid[x + 1][y - 1];
+		break;
+	case BottomLeft:
+		if (y + 1 < gridHeight && x > 0)
+			selectedNeighbor = tileGrid[x - 1][y + 1];
+		break;
+	case BottomRight:
+		if (y + 1 < gridHeight && x + 1< gridWidth)
+			selectedNeighbor = tileGrid[x + 1][y + 1];
+	}
+
+	return selectedNeighbor;
+}
+
+bool UTileSystem::OccupyTile(int32 x, int32 y)
+{
+	ATileActor* tile = tileGrid[x][y];
+
+	//return false if tile was already occupied
+	return tile->bOccupied != (tile->bOccupied = true);
+}
+
+FVector UTileSystem::GetLocationAt(int32 x, int32 y)
+{
+	return tileGrid[x][y]->GetActorLocation();
+}

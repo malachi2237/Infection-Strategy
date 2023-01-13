@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "InfectionStrategyGameMode.h"
+#include "Blueprint/UserWidget.h"
 #include "InfectionStrategyPlayerController.h"
 #include "InfectionStrategyCharacter.h"
 #include "UObject/ConstructorHelpers.h"
@@ -42,4 +43,11 @@ void AInfectionStrategyGameMode::BeginPlay()
 			tileSystem->OccupyTile(i, 0);
 		}
 	}
+}
+
+int AInfectionStrategyGameMode::EndTurn()
+{
+	activePlayerId = !activePlayerId;
+
+	return activePlayerId;
 }

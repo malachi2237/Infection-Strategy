@@ -12,6 +12,8 @@
 
 /** Forward declaration to improve compiling times */
 class UNiagaraSystem;
+class UUserWidget;
+class UVehicleWidget;
 
 UCLASS()
 class AInfectionStrategyPlayerController : public APlayerController
@@ -21,6 +23,7 @@ class AInfectionStrategyPlayerController : public APlayerController
 public:
 	AInfectionStrategyPlayerController();
 
+	virtual void BeginPlay() override;
 	/** Time Threshold to know if it was a short press */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float ShortPressThreshold;
@@ -47,16 +50,21 @@ protected:
 	virtual void SetupInputComponent() override;
 	// End PlayerController interface
 
-	/** Input handlers for SetDestination action. */
-	//void OnSetDestinationPressed();
-	//void OnSetDestinationReleased();
-	void OnTouchPressed(const ETouchIndex::Type FingerIndex, const FVector Location);
-	void OnTouchReleased(const ETouchIndex::Type FingerIndex, const FVector Location);
-
-	//void OnSelectUnitPressed();
 	void OnSelectUnitReleased();
 
 	void OnConfirmMoveReleased();
+
+	UPROPERTY(EditAnywhere, Category = UI)
+	TSubclassOf<UUserWidget> hudTemplate;
+
+	UPROPERTY()
+	UUserWidget* hudInstance;
+
+	UPROPERTY(EditAnywhere, Category = UI)
+	TSubclassOf<UVehicleWidget> vehicleHudTemplate;
+
+	UPROPERTY()
+	UVehicleWidget* vehicleHudInstance;
 
 private:
 	int32 cameraMoveVert = 0;

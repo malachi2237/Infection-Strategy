@@ -8,6 +8,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "InfectionStrategyGameMode.generated.h"
 
+
 UCLASS(minimalapi)
 class AInfectionStrategyGameMode : public AGameModeBase
 {
@@ -17,6 +18,9 @@ public:
 	AInfectionStrategyGameMode();
 
 	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
+	int EndTurn();
 
 	UTileSystem* tileSystem = nullptr;
 

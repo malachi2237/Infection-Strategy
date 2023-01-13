@@ -64,7 +64,6 @@ protected:
 	void OnSelection();
 
 	bool CanMove();
-	int32 RemainingMoves();
 
 private:
 	UPROPERTY(VisibleAnywhere)
@@ -79,6 +78,8 @@ public:
 
 	bool TryMovement();
 	void UndoMovement(int32 steps);
+
+	int32 RemainingMoves();
 
 	virtual FORCEINLINE UPawnMovementComponent* GetMovementComponent() const override { return tileMovement; };
 

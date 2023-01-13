@@ -8,6 +8,8 @@
 #include "Engine/GameEngine.h"
 #include "InfectionStrategyCharacter.h"
 #include "Engine/World.h"
+#include "Blueprint/UserWidget.h"
+#include "VehicleWidget.h"
 
 
 #define MAX_UNITS 5
@@ -21,6 +23,16 @@ AInfectionStrategyPlayerController::AInfectionStrategyPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 }
 
+void AInfectionStrategyPlayerController::BeginPlay()
+{
+	if (hudTemplate)
+		hudInstance = CreateWidget(this, hudTemplate);
+
+	hudInstance->AddToViewport();
+
+	if (vehicleHudTemplate)
+		vehicleHudInstance = CreateWidget<UVehicleWidget>(this, vehicleHudTemplate);
+}
 void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
@@ -31,36 +43,6 @@ void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 
 		GetPawn()->AddMovementInput(inputVector, 1.f, false);
 	}
-
-	//if(bVertic)
-	//{
-	//	FollowTime += DeltaTime;
-
-	//	// Look for the touch location
-	//	FVector HitLocation = FVector::ZeroVector;
-	//	FHitResult Hit;
-	//	if(bIsTouch)
-	//	{
-	//		GetHitResultUnderFinger(ETouchIndex::Touch1, ECC_Visibility, true, Hit);
-	//	}
-	//	else
-	//	{
-	//		GetHitResultUnderCursor(ECC_Visibility, true, Hit);
-	//	}
-	//	HitLocation = Hit.Location;
-
-	//	// Direct the Pawn towards that location
-	//	APawn* const MyPawn = GetPawn();
-	//	if(MyPawn)
-	//	{
-	//		FVector WorldDirection = (HitLocation - MyPawn->GetActorLocation()).GetSafeNormal();
-	//		MyPawn->AddMovementInput(WorldDirection, 1.f, false);
-	//	}
-	//}
-	//else
-	//{
-	//	FollowTime = 0.f;
-	//}
 }
 
 void AInfectionStrategyPlayerController::SetupInputComponent()
@@ -89,49 +71,7 @@ void AInfectionStrategyPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Confirm", IE_Released, this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
 
-
-	// support touch devices 
-	//InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AInfectionStrategyPlayerController::OnTouchPressed);
-	//InputComponent->BindTouch(EInputEvent::IE_Released, this, &AInfectionStrategyPlayerController::OnTouchReleased);
-
 }
-
-
-//void AInfectionStrategyPlayerController::OnSetDestinationPressed()
-//{
-//	// We flag that the input is being pressed
-//	bInputPressed = true;
-//	// Just in case the character was moving because of a previous short press we stop it
-//	StopMovement();
-//}
-//
-//void AInfectionStrategyPlayerController::OnSetDestinationReleased()
-//{
-//	// Player is no longer pressing the input
-//	bInputPressed = false;
-//
-//	// If it was a short press
-//	if(FollowTime <= ShortPressThreshold)
-//	{
-//		// We look for the location in the world where the player has pressed the input
-//		FVector HitLocation = FVector::ZeroVector;
-//		FHitResult Hit;
-//		GetHitResultUnderCursor(ECC_Visibility, true, Hit);
-//		HitLocation = Hit.Location;
-//		
-//		// We move there and spawn some particles
-//		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, HitLocation);
-//		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, HitLocation, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-//	}
-//}
-//
-//void AInfectionStrategyPlayerController::OnSelectUnitPressed()
-//{
-//	// We flag that the input is being pressed
-//	bInputPressed = true;
-//	// Just in case the character was moving because of a previous short press we stop it
-//	StopMovement();
-//}
 
 void AInfectionStrategyPlayerController::OnSelectUnitReleased()
 {
@@ -165,24 +105,26 @@ void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
 
 	if (unit && unit->TrySelect(playerId))
 	{
+		if (vehicleHudInstance)
+		{
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hud Instantiated"));
+			vehicleHudInstance->AddToViewport();
+			vehicleHudInstance->SetSelectedVehicle(unit);
+		}
+		
 		selectedVehicle = unit;
+		
 		return;
 	}
 
 	selectedVehicle = nullptr;
+	if (vehicleHudInstance)
+	{
+		vehicleHudInstance->RemoveFromViewport();
+		vehicleHudInstance->SetSelectedVehicle(selectedVehicle);
+	}
 }
-
-//void AInfectionStrategyPlayerController::OnTouchPressed(const ETouchIndex::Type FingerIndex, const FVector Location)
-//{
-//	bIsTouch = true;
-//	OnSetDestinationPressed();
-//}
-//
-//void AInfectionStrategyPlayerController::OnTouchReleased(const ETouchIndex::Type FingerIndex, const FVector Location)
-//{
-//	bIsTouch = false;
-//	OnSetDestinationReleased();
-//}
 
 void AInfectionStrategyPlayerController::StartTurn(int32 player)
 {

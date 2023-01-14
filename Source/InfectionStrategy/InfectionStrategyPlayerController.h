@@ -6,6 +6,7 @@
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "Containers/Deque.h"
+#include "ITurnBased.h"
 #include "InfectionStrategyPlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */
@@ -17,7 +18,7 @@ class ATileActor;
 enum class Neighbor;
 
 UCLASS()
-class AInfectionStrategyPlayerController : public APlayerController
+class AInfectionStrategyPlayerController : public APlayerController, public ITurnBased
 {
 	GENERATED_BODY()
 
@@ -35,6 +36,11 @@ public:
 
 	void StartTurn(int32 player);
 	void EndTurn();
+
+	/* TurnBased Interface*/
+	virtual void OnTurnBegin() override;
+	virtual void OnTurnEnd() override;
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;

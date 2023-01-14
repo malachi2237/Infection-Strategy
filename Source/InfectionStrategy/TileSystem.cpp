@@ -107,3 +107,13 @@ FVector UTileSystem::GetLocationAt(int32 x, int32 y)
 {
 	return tileGrid[x][y]->GetActorLocation();
 }
+
+void UTileSystem::OnTurnBegin()
+{
+
+}
+
+void UTileSystem::OnTurnEnd()
+{
+
+}

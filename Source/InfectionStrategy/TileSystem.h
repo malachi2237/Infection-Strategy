@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ITurnBased.h"
 #include "Components/ActorComponent.h"
 #include "TileSystem.generated.h"
 
@@ -22,7 +23,7 @@ enum class Neighbor
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class INFECTIONSTRATEGY_API UTileSystem : public UActorComponent
+class INFECTIONSTRATEGY_API UTileSystem : public UActorComponent, public ITurnBased
 {
 	GENERATED_BODY()
 
@@ -49,10 +50,13 @@ public:
 	bool OccupyTile(int32 x, int32 y);
 
 	FVector GetLocationAt(int32 x, int32 y);
+
+	/* TurnBased Interface*/
+	virtual void OnTurnBegin() override;
+	virtual void OnTurnEnd() override;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-		
 };

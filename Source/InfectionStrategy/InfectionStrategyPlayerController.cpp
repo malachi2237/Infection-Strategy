@@ -233,3 +233,13 @@ void AInfectionStrategyPlayerController::OnMoveCameraHorizontalReleased()
 {
 	cameraMoveHoriz = 0;
 }
+
+void AInfectionStrategyPlayerController::OnTurnBegin()
+{
+
+}
+
+void AInfectionStrategyPlayerController::OnTurnEnd()
+{
+
+}

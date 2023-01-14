@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ITargetable.h"
+#include "ITurnBased.h"
 #include "VehicleUnit.generated.h"
 
 class ATileActor;
@@ -12,7 +13,7 @@ class USelectionStateComponent;
 class UTileMovementComponent;
 
 UCLASS()
-class INFECTIONSTRATEGY_API AVehicleUnit : public APawn, public ITargetable
+class INFECTIONSTRATEGY_API AVehicleUnit : public APawn, public ITargetable, public ITurnBased
 {
 	GENERATED_BODY()
 	
@@ -89,4 +90,8 @@ public:
 	/* Targetable interface */
 	void Target() override;
 	void Untarget() override;
+
+	/* TurnBased Interface*/
+	virtual void OnTurnBegin() override;
+	virtual void OnTurnEnd() override;
 };

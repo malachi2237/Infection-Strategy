@@ -120,4 +120,14 @@ void AVehicleUnit::Untarget()
 
 }
 
+void AVehicleUnit::OnTurnBegin()
+{
+
+}
+
+void AVehicleUnit::OnTurnEnd()
+{
+
+}
+
 UPawnMovementComponent* AVehicleUnit::GetMovementComponent() const { return tileMovement; };

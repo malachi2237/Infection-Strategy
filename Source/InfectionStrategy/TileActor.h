@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ITargetable.h"
+#include "ITurnBased.h"
 #include "GameFramework/Actor.h"
 #include "TileActor.generated.h"
 
@@ -11,7 +12,7 @@ class USelectionStateComponent;
 class UGasComponent;
 
 UCLASS()
-class INFECTIONSTRATEGY_API ATileActor : public AActor, public ITargetable
+class INFECTIONSTRATEGY_API ATileActor : public AActor, public ITargetable, public ITurnBased
 {
 	GENERATED_BODY()
 	
@@ -66,4 +67,8 @@ public:
 	/* Targetable Interface */
 	void Target() override;
 	void Untarget() override;
+
+	/* TurnBased Interface*/
+	virtual void OnTurnBegin() override;
+	virtual void OnTurnEnd() override;
 };

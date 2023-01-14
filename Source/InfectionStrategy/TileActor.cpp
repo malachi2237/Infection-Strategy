@@ -152,3 +152,13 @@ void ATileActor::Untarget()
 {
 
 }
+
+void ATileActor::OnTurnBegin()
+{
+
+}
+
+void ATileActor::OnTurnEnd()
+{
+
+}

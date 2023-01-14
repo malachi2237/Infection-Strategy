@@ -22,6 +22,7 @@ enum class Neighbor
 	BottomRight
 };
 
+// TODO: Change into AActor, not just component
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class INFECTIONSTRATEGY_API UTileSystem : public UActorComponent, public ITurnBased
 {

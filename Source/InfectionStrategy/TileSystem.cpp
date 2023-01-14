@@ -2,6 +2,7 @@
 
 
 #include "TileSystem.h"
+#include "TileActor.h"
 #include "InfectionStrategyGameMode.h"
 // Sets default values for this component's properties
 UTileSystem::UTileSystem()
@@ -53,39 +54,40 @@ void UTileSystem::BeginPlay()
 
 ATileActor* UTileSystem::GetNeighbor(int x, int y, Neighbor neighborType)
 {
+	
 	ATileActor* selectedNeighbor = nullptr;
 
 	switch (neighborType)
 	{
-	case Up:
+	case Neighbor::Up:
 		if (y > 0)
 			selectedNeighbor = tileGrid[x][y - 1];
 		break;
-	case Down:
+	case Neighbor::Down:
 		if (y + 1 < gridHeight)
 			selectedNeighbor = tileGrid[x][y + 1];
 		break;
-	case Left:
+	case Neighbor::Left:
 		if (x > 0)
 			selectedNeighbor = tileGrid[x - 1][y];
 		break;
-	case Right:
+	case Neighbor::Right:
 		if (x + 1 < gridWidth)
 			selectedNeighbor = tileGrid[x + 1][y];
 		break;
-	case TopLeft:
+	case Neighbor::TopLeft:
 		if (y > 0 && x > 0)
 			selectedNeighbor = tileGrid[x - 1][y - 1];
 		break;
-	case TopRight:
+	case Neighbor::TopRight:
 		if (y > 0 && x + 1 < gridWidth)
 			selectedNeighbor = tileGrid[x + 1][y - 1];
 		break;
-	case BottomLeft:
+	case Neighbor::BottomLeft:
 		if (y + 1 < gridHeight && x > 0)
 			selectedNeighbor = tileGrid[x - 1][y + 1];
 		break;
-	case BottomRight:
+	case Neighbor::BottomRight:
 		if (y + 1 < gridHeight && x + 1< gridWidth)
 			selectedNeighbor = tileGrid[x + 1][y + 1];
 	}

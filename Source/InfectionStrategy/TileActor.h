@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SelectionStateComponent.h"
-#include "GasComponent.h"
 #include "ITargetable.h"
 #include "GameFramework/Actor.h"
 #include "TileActor.generated.h"
+
+class USelectionStateComponent;
+class UGasComponent;
 
 UCLASS()
 class INFECTIONSTRATEGY_API ATileActor : public AActor, public ITargetable
@@ -62,6 +63,7 @@ public:
 
 	static ATileActor* GetTileUnderLocation(const FVector &location);
 
+	/* Targetable Interface */
 	void Target() override;
 	void Untarget() override;
 };

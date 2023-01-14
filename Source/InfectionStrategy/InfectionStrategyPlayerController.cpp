@@ -10,7 +10,9 @@
 #include "Engine/World.h"
 #include "Blueprint/UserWidget.h"
 #include "VehicleWidget.h"
-
+#include "TileSystem.h"
+#include "VehicleUnit.h"
+#include "TileActor.h"
 
 #define MAX_UNITS 5
 
@@ -156,7 +158,7 @@ void AInfectionStrategyPlayerController::TryTileMovement(Neighbor direction)
 			return;
 		}
 
-		nextTile = currentTile->neighbors[direction];
+		nextTile = currentTile->neighbors[static_cast<int>(direction)];
 
 		if ((nextTile && nextTile->CanSelect()) && selectedVehicle->TryMovement())
 		{

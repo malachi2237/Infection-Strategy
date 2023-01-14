@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SelectionStateComponent.h"
-#include "TileActor.h"
-#include "ITargetable.h"
-#include "TileMovementComponent.h"
 #include "GameFramework/Actor.h"
+#include "ITargetable.h"
 #include "VehicleUnit.generated.h"
+
+class ATileActor;
+class USelectionStateComponent;
+class UTileMovementComponent;
 
 UCLASS()
 class INFECTIONSTRATEGY_API AVehicleUnit : public APawn, public ITargetable
@@ -81,9 +82,11 @@ public:
 
 	int32 RemainingMoves();
 
-	virtual FORCEINLINE UPawnMovementComponent* GetMovementComponent() const override { return tileMovement; };
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
 
 	void SetPlayerOwner(int32 newOwner);
+
+	/* Targetable interface */
 	void Target() override;
 	void Untarget() override;
 };

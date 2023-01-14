@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "VehicleUnit.h"
+
+#include "TileActor.h"
+#include "SelectionStateComponent.h"
 #include "TileMovementComponent.h"
 
 // Sets default values
@@ -116,3 +119,5 @@ void AVehicleUnit::Untarget()
 {
 
 }
+
+UPawnMovementComponent* AVehicleUnit::GetMovementComponent() const { return tileMovement; };

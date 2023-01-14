@@ -3,6 +3,8 @@
 
 #include "TileActor.h"
 
+#include "SelectionStateComponent.h"
+#include "GasComponent.h"
 // Sets default values
 ATileActor::ATileActor()
 {

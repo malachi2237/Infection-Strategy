@@ -3,11 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TileActor.h"
-#include "TileSystem.h"
 #include "GameFramework/GameModeBase.h"
 #include "InfectionStrategyGameMode.generated.h"
 
+class UTileSystem;
 
 UCLASS(minimalapi)
 class AInfectionStrategyGameMode : public AGameModeBase
@@ -26,6 +25,7 @@ public:
 
 private:
 	int activePlayerId = 0;
+	int turnNumber = 1;
 };
 
 

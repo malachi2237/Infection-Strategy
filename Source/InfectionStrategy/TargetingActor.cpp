@@ -3,6 +3,8 @@
 
 #include "TargetingActor.h"
 
+#include "Components/ShapeComponent.h"
+
 // Sets default values
 ATargetingActor::ATargetingActor()
 {

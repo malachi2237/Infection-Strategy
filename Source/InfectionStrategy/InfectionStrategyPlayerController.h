@@ -6,14 +6,15 @@
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "Containers/Deque.h"
-#include "TileSystem.h"
-#include "VehicleUnit.h"
 #include "InfectionStrategyPlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */
 class UNiagaraSystem;
 class UUserWidget;
 class UVehicleWidget;
+class AVehicleUnit;
+class ATileActor;
+enum class Neighbor;
 
 UCLASS()
 class AInfectionStrategyPlayerController : public APlayerController

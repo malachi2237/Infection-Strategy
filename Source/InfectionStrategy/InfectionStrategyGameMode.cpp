@@ -5,6 +5,9 @@
 #include "InfectionStrategyPlayerController.h"
 #include "InfectionStrategyCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "TileActor.h"
+#include "TileSystem.h"
+#include "VehicleUnit.h"
 
 AInfectionStrategyGameMode::AInfectionStrategyGameMode()
 {
@@ -47,6 +50,7 @@ void AInfectionStrategyGameMode::BeginPlay()
 
 int AInfectionStrategyGameMode::EndTurn()
 {
+	turnNumber += activePlayerId * 1;
 	activePlayerId = !activePlayerId;
 
 	return activePlayerId;

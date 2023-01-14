@@ -3,12 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TileActor.h"
 #include "Components/ActorComponent.h"
 #include "TileSystem.generated.h"
 
+class ATileActor;
+
 UENUM()
-enum Neighbor
+enum class Neighbor
 {
 	Up,
 	Down,
@@ -29,7 +30,7 @@ private:
 	TArray<TArray<ATileActor*>> tileGrid;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ATileActor> tileTemplate;
+	TSubclassOf<ATileActor> tileTemplate;
 public:	
 	// Sets default values for this component's properties
 	UTileSystem();

@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ShapeComponent.h"
 #include "GameFramework/Actor.h"
 #include "TargetingActor.generated.h"
+
+class UPrimitiveComponent;
 
 DECLARE_DELEGATE_OneParam(FOnOverlapDelegate, AActor*)
 

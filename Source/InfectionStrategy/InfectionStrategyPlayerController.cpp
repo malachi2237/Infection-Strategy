@@ -85,14 +85,9 @@ void AInfectionStrategyPlayerController::OnSelectUnitReleased()
 	GetHitResultUnderCursor(ECC_Visibility, true, Hit);
 	HitLocation = Hit.Location;
 
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, Hit.GetActor()->GetName());
-	
+	//TODO: should check if this is a player owned vehicle
 	if (AVehicleUnit* unit = Cast<AVehicleUnit>(Hit.GetActor()))
-	{
-		/*if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("IsVehicle"));*/
 		SelectUnit(unit);
-	}
 
 }
 
@@ -105,13 +100,10 @@ void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
 
 	if (unit && unit->TrySelect(playerId))
 	{
-		if (vehicleHudInstance)
-		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Hud Instantiated"));
+		if (!vehicleHudInstance->IsInViewport())
 			vehicleHudInstance->AddToViewport();
-			vehicleHudInstance->SetSelectedVehicle(unit);
-		}
+
+		vehicleHudInstance->SetSelectedVehicle(unit);
 		
 		selectedVehicle = unit;
 		

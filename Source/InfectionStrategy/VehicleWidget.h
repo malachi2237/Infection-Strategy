@@ -27,4 +27,7 @@ public:
 protected:
 	AVehicleUnit* selectedVehicle;
 
+	void OnDeselect();
+	void OnAttack();
+	void OnMove();
 };

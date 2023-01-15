@@ -222,12 +222,12 @@ void AInfectionStrategyPlayerController::OnMoveCameraHorizontalReleased()
 	cameraMoveHoriz = 0;
 }
 
-void AInfectionStrategyPlayerController::OnTurnBegin(int32 playerIdNum)
+void AInfectionStrategyPlayerController::OnTurnBegin(int32 player)
 {
 	playerId = player;
 }
 
-void AInfectionStrategyPlayerController::OnTurnEnd(int32 playerIdNum)
+void AInfectionStrategyPlayerController::OnTurnEnd(int32 player)
 {
 	playerId = -1;
 

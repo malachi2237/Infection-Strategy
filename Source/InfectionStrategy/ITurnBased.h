@@ -19,6 +19,6 @@ class INFECTIONSTRATEGY_API ITurnBased
 
 public:
 	ITurnBased() {};
-	virtual void OnTurnBegin() = 0;
-	virtual void OnTurnEnd() = 0;
+	virtual void OnTurnBegin(int32 playerId) = 0;
+	virtual void OnTurnEnd(int32 playerId) = 0;
 };

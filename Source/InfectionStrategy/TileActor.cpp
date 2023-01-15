@@ -153,12 +153,12 @@ void ATileActor::Untarget()
 
 }
 
-void ATileActor::OnTurnBegin()
+void ATileActor::OnTurnBegin(int32 playerId)
 {
 
 }
 
-void ATileActor::OnTurnEnd()
+void ATileActor::OnTurnEnd(int32 playerId)
 {
 
 }

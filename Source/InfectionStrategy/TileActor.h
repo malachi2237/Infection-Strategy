@@ -69,6 +69,6 @@ public:
 	void Untarget() override;
 
 	/* TurnBased Interface*/
-	virtual void OnTurnBegin() override;
-	virtual void OnTurnEnd() override;
+	virtual void OnTurnBegin(int32 playerId) override;
+	virtual void OnTurnEnd(int32 playerId) override;
 };

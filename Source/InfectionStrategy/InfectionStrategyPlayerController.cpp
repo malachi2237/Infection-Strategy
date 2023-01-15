@@ -120,18 +120,6 @@ void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
 	}
 }
 
-void AInfectionStrategyPlayerController::StartTurn(int32 player)
-{
-	playerId = player;
-}
-
-void AInfectionStrategyPlayerController::EndTurn()
-{
-	playerId = -1;
-
-	SelectUnit(nullptr);
-}
-
 void AInfectionStrategyPlayerController::TryTileMovement(Neighbor direction)
 {
 	ATileActor *currentTile = nullptr;
@@ -234,12 +222,14 @@ void AInfectionStrategyPlayerController::OnMoveCameraHorizontalReleased()
 	cameraMoveHoriz = 0;
 }
 
-void AInfectionStrategyPlayerController::OnTurnBegin()
+void AInfectionStrategyPlayerController::OnTurnBegin(int32 playerIdNum)
 {
-
+	playerId = player;
 }
 
-void AInfectionStrategyPlayerController::OnTurnEnd()
+void AInfectionStrategyPlayerController::OnTurnEnd(int32 playerIdNum)
 {
+	playerId = -1;
 
+	SelectUnit(nullptr);
 }

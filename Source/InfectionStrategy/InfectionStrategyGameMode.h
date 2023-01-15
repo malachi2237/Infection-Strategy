@@ -20,6 +20,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int EndTurn();
+	
 
 	UTileSystem* tileSystem = nullptr;
 

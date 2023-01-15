@@ -34,12 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UNiagaraSystem* FXCursor;
 
-	void StartTurn(int32 player);
-	void EndTurn();
-
 	/* TurnBased Interface*/
-	virtual void OnTurnBegin() override;
-	virtual void OnTurnEnd() override;
+	virtual void OnTurnBegin(int32 player) override;
+	virtual void OnTurnEnd(int32 player) override;
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */

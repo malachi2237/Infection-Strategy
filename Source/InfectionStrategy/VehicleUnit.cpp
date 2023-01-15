@@ -120,12 +120,12 @@ void AVehicleUnit::Untarget()
 
 }
 
-void AVehicleUnit::OnTurnBegin()
+void AVehicleUnit::OnTurnBegin(int32 playerId)
 {
 
 }
 
-void AVehicleUnit::OnTurnEnd()
+void AVehicleUnit::OnTurnEnd(int32 playerId)
 {
 
 }

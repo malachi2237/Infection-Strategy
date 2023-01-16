@@ -229,7 +229,5 @@ void AInfectionStrategyPlayerController::OnTurnBegin(int32 player)
 
 void AInfectionStrategyPlayerController::OnTurnEnd(int32 player)
 {
-	playerId = -1;
-
 	SelectUnit(nullptr);
 }

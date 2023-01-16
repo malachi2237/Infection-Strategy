@@ -74,7 +74,7 @@ bool ATileActor::SelectForMovement()
 	return true;
 }
 
-bool ATileActor::CanSelect()
+bool ATileActor::CanSelect() const
 {
 	return !(bOccupied || selectionState->MovementSelected());
 }
@@ -141,6 +141,11 @@ ATileActor* ATileActor::GetTileUnderLocation(const FVector &location)
 	}
 
 	return nullptr;
+}
+
+bool ATileActor::IsVolatile() const
+{
+	return gas->GetGasLevel() && gas->IsConnected();
 }
 
 void ATileActor::Target()

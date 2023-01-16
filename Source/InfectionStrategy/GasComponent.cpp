@@ -39,3 +39,8 @@ void UGasComponent::SetGasLevel(int32 newLevel)
 {
 	gasLevel = FMath::Clamp(newLevel, 0, 4);
 }
+
+int32 UGasComponent::GetGasLevel() const
+{
+	return gasLevel;
+}

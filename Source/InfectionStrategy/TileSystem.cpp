@@ -4,14 +4,11 @@
 #include "TileSystem.h"
 #include "TileActor.h"
 #include "InfectionStrategyGameMode.h"
+
 // Sets default values for this component's properties
 UTileSystem::UTileSystem()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
 }
 
 // Called when the game starts
@@ -36,6 +33,7 @@ void UTileSystem::BeginPlay()
 			auto newTileActor = (ATileActor*)GetWorld()->SpawnActor(tileTemplate, spawnLocation);
 
 			newTileActor->SetCoordinates(x, y);
+			newTileActor->OnVolatileStateBegin.BindUObject(this, &UTileSystem::MarkTileAsVolatile);
 			tileGrid[x].Add(newTileActor);
 		}
 	}
@@ -52,9 +50,8 @@ void UTileSystem::BeginPlay()
 	}
 }
 
-ATileActor* UTileSystem::GetNeighbor(int x, int y, Neighbor neighborType)
+ATileActor* UTileSystem::GetNeighbor(int32 x, int32 y, Neighbor neighborType)
 {
-	
 	ATileActor* selectedNeighbor = nullptr;
 
 	switch (neighborType)
@@ -108,12 +105,23 @@ FVector UTileSystem::GetLocationAt(int32 x, int32 y)
 	return tileGrid[x][y]->GetActorLocation();
 }
 
+void UTileSystem::MarkTileAsVolatile(ATileActor* tile)
+{
+	VolatileTiles.Add(tile);
+}
+
 void UTileSystem::OnTurnBegin(int32 playerId)
 {
+	VolatileTiles = VolatileTiles.FilterByPredicate([](ATileActor* tile) { return tile->IsVolatile(); });
 
+	for (auto& tile : VolatileTiles)
+		tile->OnTurnBegin(playerId);
 }
 
 void UTileSystem::OnTurnEnd(int32 playerId)
 {
+	VolatileTiles = VolatileTiles.FilterByPredicate([](ATileActor* tile) { return tile->IsVolatile(); });
 
+	for (auto& tile : VolatileTiles)
+		tile->OnTurnEnd(playerId);
 }

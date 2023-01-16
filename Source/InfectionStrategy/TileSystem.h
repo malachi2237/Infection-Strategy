@@ -60,4 +60,8 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	void MarkTileAsVolatile(ATileActor* tile);
+
+	UPROPERTY()
+	TArray<ATileActor*> VolatileTiles;
 };

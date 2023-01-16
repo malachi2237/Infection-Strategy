@@ -11,6 +11,8 @@
 class USelectionStateComponent;
 class UGasComponent;
 
+DECLARE_DELEGATE_OneParam(FOnVolatileChangedDelegate, ATileActor*);
+
 UCLASS()
 class INFECTIONSTRATEGY_API ATileActor : public AActor, public ITargetable, public ITurnBased
 {
@@ -28,6 +30,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	UGasComponent* gas;
+
+	FOnVolatileChangedDelegate OnVolatileStateBegin;
+
+	FOnVolatileChangedDelegate OnVolatileStateEnd;
 
 	//State Booleans
 	bool bOccupied = false;
@@ -56,12 +62,13 @@ public:
 	bool SelectForMovement();
 	void SelectForTargeting();
 
-	bool CanSelect();
+	bool CanSelect() const;
 	void Deselect();
 
 	void RecalculateGasLevel();
 	void RecalculateIsConnected();
 
+	bool IsVolatile() const;
 	static ATileActor* GetTileUnderLocation(const FVector &location);
 
 	/* Targetable Interface */

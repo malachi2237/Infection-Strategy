@@ -33,4 +33,5 @@ public:
 
 	void SetConnected(bool isConnected);
 	void SetGasLevel(int32 newLevel);
+	int32 GetGasLevel() const;
 };

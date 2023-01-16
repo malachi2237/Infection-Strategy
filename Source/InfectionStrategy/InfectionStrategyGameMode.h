@@ -7,6 +7,7 @@
 #include "InfectionStrategyGameMode.generated.h"
 
 class UTileSystem;
+class AVehicleUnit;
 
 UCLASS(minimalapi)
 class AInfectionStrategyGameMode : public AGameModeBase
@@ -27,6 +28,9 @@ public:
 private:
 	int activePlayerId = 0;
 	int turnNumber = 1;
+
+	UPROPERTY()
+	TArray<TWeakObjectPtr<AVehicleUnit>> vehicles;
 };
 
 

@@ -8,6 +8,7 @@
 #include "TileActor.h"
 #include "TileSystem.h"
 #include "VehicleUnit.h"
+#include <Kismet/GameplayStatics.h>
 
 AInfectionStrategyGameMode::AInfectionStrategyGameMode()
 {
@@ -44,14 +45,42 @@ void AInfectionStrategyGameMode::BeginPlay()
 		{
 			newUnit->SetOwner(0);
 			tileSystem->OccupyTile(i, 0);
+
+			vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
 		}
 	}
 }
 
 int AInfectionStrategyGameMode::EndTurn()
 {
+	auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+	
+	if (playerController)
+		playerController->OnTurnEnd(activePlayerId);
+
+	for (auto& unit : vehicles)
+	{
+		if (unit.IsValid())
+			unit->OnTurnEnd(activePlayerId);
+
+	}
+
+	tileSystem->OnTurnEnd(activePlayerId);
+
+	// Next turn begins
 	turnNumber += activePlayerId * 1;
 	activePlayerId = !activePlayerId;
+
+	if (playerController)
+		playerController->OnTurnBegin(activePlayerId);
+
+	for (auto& unit : vehicles)
+	{
+		if (unit.IsValid())
+			unit->OnTurnBegin(activePlayerId);
+	}
+
+	tileSystem->OnTurnBegin(activePlayerId);
 
 	return activePlayerId;
 }

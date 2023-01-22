@@ -113,15 +113,20 @@ void ATileActor::RecalculateGasLevel()
 
 void ATileActor::RecalculateIsConnected()
 {
-	for (int i = 0; i < 8; i++)
+	if (gas->GetGasLevel())
 	{
-		if (neighbors[i] != nullptr && neighbors[i]->gas->IsConnected())
+		for (int i = 0; i < 8; i++)
 		{
-			gas->SetConnected(true);
-			return;
+			if (neighbors[i] != nullptr && neighbors[i]->gas->IsConnected())
+			{
+				gas->SetConnected(true);
+				if (IsVolatile())
+					OnVolatileStateBegin.ExecuteIfBound(this);
+				return;
+			}
 		}
 	}
-	
+
 	gas->SetConnected(false);
 }
 

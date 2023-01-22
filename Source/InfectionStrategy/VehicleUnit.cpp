@@ -127,7 +127,8 @@ void AVehicleUnit::OnTurnBegin(int32 playerId)
 
 void AVehicleUnit::OnTurnEnd(int32 playerId)
 {
-
+	currentMovement = 0;
+	bCanAttack = true;
 }
 
 UPawnMovementComponent* AVehicleUnit::GetMovementComponent() const { return tileMovement; };

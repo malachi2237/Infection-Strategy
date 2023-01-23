@@ -187,6 +187,8 @@ void AInfectionStrategyPlayerController::OnConfirmMoveReleased()
 		ATileActor* currentTile;
 		FVector previousLocation = selectedVehicle->GetActorLocation();
 
+		selectedVehicle->tile->bOccupied = false;
+
 		while (movementQueue.TryPopFirst(currentTile))
 		{
 			FVector direction = currentTile->GetActorLocation() - previousLocation;

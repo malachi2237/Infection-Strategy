@@ -45,7 +45,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int32 maxMovement = 10;
 
-	UPROPERTY(EditAnywhere)
 	int32 currentMovement = 0;
 
 	bool bCanAttack = true;
@@ -61,6 +60,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UMaterialInstance *selectedStateMaterial;
 
+	UPROPERTY(EditAnywhere)
 	UTileMovementComponent* tileMovement;
 
 	void OnSelection();
@@ -68,9 +68,6 @@ protected:
 	bool CanMove();
 
 private:
-	UPROPERTY(VisibleAnywhere)
-	float movementSpeed = 100.0f;
-
 	float currentMovementTimer = 0.0f;
 public:	
 	// Called every frame

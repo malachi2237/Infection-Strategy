@@ -17,8 +17,8 @@ public:
 	UTileMovementComponent();
 	
 protected:
-	UPROPERTY(VisibleAnywhere)
-	float movementSpeed = 100.0f;
+	UPROPERTY(EditAnywhere)
+	float movementSpeed = 500.0f;
 
 	bool bCurrentlyMoving = false;
 private:

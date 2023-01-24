@@ -24,8 +24,13 @@ protected:
 private:
 	float MovementTime = 0.0f;
 	float CompletionTime = 0.0f;
-	FVector MovementDirection;
-	FQuat startRotation;
+
+	FVector StartLocation;
+	FQuat StartRotation;
+	
+	FVector EndLocation;
+	FQuat EndRotation;
+
 	TQueue<FVector> MovementQueue;
 
 	FORCEINLINE float CalculateCompletionTime(const FVector &toLocation) const { return toLocation.Length() / movementSpeed; };

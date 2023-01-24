@@ -34,19 +34,22 @@ void AInfectionStrategyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (int i = 0; i < 5; i++)
+	if (vehicleTemplate)
 	{
-		const FVector location = tileSystem->GetLocationAt(i, 0) + FVector(0,0,25.0f);
-		const FRotator rotator = FRotator::ZeroRotator;
-
-		AVehicleUnit *newUnit = (AVehicleUnit *)GetWorld()->SpawnActor<AVehicleUnit>(AVehicleUnit::StaticClass(), location, rotator);
-
-		if (newUnit != nullptr)
+		for (int i = 0; i < 5; i++)
 		{
-			newUnit->SetOwner(0);
-			tileSystem->OccupyTile(i, 0);
+			const FVector location = tileSystem->GetLocationAt(i, 0) + FVector(0, 0, 25.0f);
+			const FRotator rotator = FRotator::ZeroRotator;
 
-			vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
+			AVehicleUnit* newUnit = (AVehicleUnit*)GetWorld()->SpawnActor<AVehicleUnit>(vehicleTemplate, location, rotator);
+
+			if (newUnit != nullptr)
+			{
+				newUnit->SetOwner(0);
+				tileSystem->OccupyTile(i, 0);
+
+				vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
+			}
 		}
 	}
 }

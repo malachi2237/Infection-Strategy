@@ -20,12 +20,15 @@ void UTileMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 		tileDirection = CalculateTileDirection(tileDirection, 1.f);
 
-		MovementDirection = tileDirection;
-		MovementDirection.Normalize();
-
 		CompletionTime = CalculateCompletionTime(tileDirection);
 		MovementTime = 0.0f;
-		startRotation = PawnOwner->GetActorRotation().Quaternion();
+
+		StartRotation = PawnOwner->GetActorRotation().Quaternion();
+		StartLocation = PawnOwner->GetActorLocation();
+
+		EndLocation = ATileActor::GetTileUnderLocation(StartLocation + tileDirection)->GetActorLocation();
+		EndRotation = tileDirection.ToOrientationQuat();
+
 		bCurrentlyMoving = true;
 	}
 
@@ -33,9 +36,10 @@ void UTileMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		MovementTime += DeltaTime;
 
-		//MovementTime = MovementTime > CompletionTime ? CompletionTime : MovementTime;
-		PawnOwner->AddActorWorldOffset(MovementDirection * movementSpeed * DeltaTime);
-		PawnOwner->SetActorRotation(FQuat::Slerp(startRotation, MovementDirection.ToOrientationQuat(), MovementTime / CompletionTime));
+		MovementTime = MovementTime > CompletionTime ? CompletionTime : MovementTime;
+
+		PawnOwner->SetActorLocation(FMath::Lerp(StartLocation, EndLocation, MovementTime / CompletionTime));
+		PawnOwner->SetActorRotation(FQuat::Slerp(StartRotation, EndRotation, MovementTime / CompletionTime));
 	}
 	else
 		bCurrentlyMoving = false;
@@ -54,7 +58,7 @@ FVector UTileMovementComponent::CalculateTileDirection(const FVector& direction,
 		{
 			if (targetTile->neighbors[i] == currentTile)
 			{
-				tileDirection = targetTile->GetActorLocation() - currentTile->GetActorLocation();
+				tileDirection = targetTile->GetActorLocation() - PawnOwner->GetActorLocation();
 				break;
 			}
 		}

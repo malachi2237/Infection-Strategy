@@ -184,10 +184,10 @@ void AInfectionStrategyPlayerController::OnConfirmMoveReleased()
 {
 	if (selectedVehicle)
 	{
-		ATileActor* currentTile;
+		ATileActor* currentTile = selectedVehicle->tile;
 		FVector previousLocation = selectedVehicle->GetActorLocation();
 
-		selectedVehicle->tile->bOccupied = false;
+		currentTile->bOccupied = false;
 
 		while (movementQueue.TryPopFirst(currentTile))
 		{

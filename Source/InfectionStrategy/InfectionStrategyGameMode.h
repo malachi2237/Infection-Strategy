@@ -31,6 +31,9 @@ private:
 
 	UPROPERTY()
 	TArray<TWeakObjectPtr<AVehicleUnit>> vehicles;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AVehicleUnit> vehicleTemplate;
 };
 
 

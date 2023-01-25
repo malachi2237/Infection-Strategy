@@ -34,6 +34,9 @@ void AInfectionStrategyPlayerController::BeginPlay()
 
 	if (vehicleHudTemplate)
 		vehicleHudInstance = CreateWidget<UVehicleWidget>(this, vehicleHudTemplate);
+
+	if (vehicleHudInstance)
+		vehicleHudInstance->OnDeselect.BindUObject(this, &AInfectionStrategyPlayerController::DeselectUnit);
 }
 void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 {
@@ -45,6 +48,11 @@ void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 
 		GetPawn()->AddMovementInput(inputVector, 1.f, false);
 	}
+}
+
+void AInfectionStrategyPlayerController::DeselectUnit()
+{
+	SelectUnit(nullptr);
 }
 
 void AInfectionStrategyPlayerController::SetupInputComponent()

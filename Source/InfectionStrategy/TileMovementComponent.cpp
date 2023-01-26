@@ -60,7 +60,7 @@ FVector UTileMovementComponent::CalculateTileDirection(const FVector& direction,
 		// Ensure that the tiles are neighbors
 		for (int i = 0; i < 4/*restricts looking for current tile in cardinal direction of the target*/; i++)
 		{
-			if (targetTile->neighbors[i] == currentTile)
+			if (targetTile->Neighbors[i] == currentTile)
 			{
 				tileDirection = targetTile->GetActorLocation() - PawnOwner->GetActorLocation();
 				break;

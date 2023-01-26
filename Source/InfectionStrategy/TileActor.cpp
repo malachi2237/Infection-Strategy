@@ -5,88 +5,88 @@
 
 #include "SelectionStateComponent.h"
 #include "GasComponent.h"
-// Sets default values
+
+
 ATileActor::ATileActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	tileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile Mesh"));
-	SetRootComponent(tileMesh);
-	tileMesh->SetMobility(EComponentMobility::Stationary);
+	TileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile Mesh"));
+	SetRootComponent(TileMesh);
+	TileMesh->SetMobility(EComponentMobility::Stationary);
 
-	indicatorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Indicator Mesh"));
-	indicatorMesh->SetupAttachment(RootComponent);
-	indicatorMesh->SetMobility(EComponentMobility::Stationary);
+	IndicatorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Indicator Mesh"));
+	IndicatorMesh->SetupAttachment(RootComponent);
+	IndicatorMesh->SetMobility(EComponentMobility::Stationary);
 	
-	indicatorMesh->SetVisibility(false);
-	indicatorMesh->SetCollisionProfileName(TEXT("NoCollision"));
+	IndicatorMesh->SetVisibility(false);
+	IndicatorMesh->SetCollisionProfileName(TEXT("NoCollision"));
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeVisualAsset(TEXT("/Game/StarterContent/Shapes/Shape_Plane.Shape_Plane"));
 
 	if (CubeVisualAsset.Succeeded())
 	{
-		tileMesh->SetStaticMesh(CubeVisualAsset.Object);
-		tileMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		TileMesh->SetStaticMesh(CubeVisualAsset.Object);
+		TileMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 
-		indicatorMesh->SetStaticMesh(CubeVisualAsset.Object);
-		indicatorMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
+		IndicatorMesh->SetStaticMesh(CubeVisualAsset.Object);
+		IndicatorMesh->SetRelativeLocation(FVector(0.0f, 0.0f, 100.0f));
 	}
 
-	selectionState = CreateDefaultSubobject<USelectionStateComponent>(TEXT("SelectionState"));
-	gas = CreateDefaultSubobject<UGasComponent>(TEXT("Gas"));
+	SelectionState = CreateDefaultSubobject<USelectionStateComponent>(TEXT("SelectionState"));
+	Gas = CreateDefaultSubobject<UGasComponent>(TEXT("Gas"));
 
-	neighbors.Init(nullptr, 8);
+	Neighbors.Init(nullptr, 8);
 }
 
-void ATileActor::SetCoordinates(int32 x, int32 y)
-{
-	xCoord = x;
-	yCoord = y;
-}
 
-// Called when the game starts or when spawned
 void ATileActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	selectionState->OnDefaultState.BindLambda([this] {indicatorMesh->SetVisibility(false); });
-	selectionState->OnMovementSelected.BindLambda([this]
+	SelectionState->OnDefaultState.BindLambda([this] {IndicatorMesh->SetVisibility(false); });
+	SelectionState->OnMovementSelected.BindLambda([this]
 		{
-			indicatorMesh->SetMaterial(0, movementStateMaterial);
-			indicatorMesh->SetVisibility(true);
+			IndicatorMesh->SetMaterial(0, MovementStateMaterial);
+			IndicatorMesh->SetVisibility(true);
 		});
 
-	selectionState->OnTargetingSelected.BindLambda([this]
+	SelectionState->OnTargetingSelected.BindLambda([this]
 		{
-			indicatorMesh->SetMaterial(0, targetingStateMaterial);
-			indicatorMesh->SetVisibility(true);
+			IndicatorMesh->SetMaterial(0, TargetingStateMaterial);
+			IndicatorMesh->SetVisibility(true);
 		});
+}
+
+void ATileActor::SetCoordinates(const int32 x, const int32 y)
+{
+	XCoord = x;
+	YCoord = y;
 }
 
 bool ATileActor::SelectForMovement()
 {
-	if (bOccupied || selectionState->MovementSelected())
+	if (bOccupied || SelectionState->MovementSelected())
 		return false;
 
-	selectionState->SelectForMovement();
+	SelectionState->SelectForMovement();
 
 	return true;
 }
 
 bool ATileActor::CanSelect() const
 {
-	return !(bOccupied || selectionState->MovementSelected());
+	return !(bOccupied || SelectionState->MovementSelected());
 }
 
 void ATileActor::SelectForTargeting()
 {
-	selectionState->SelectForTargeting();
+	SelectionState->SelectForTargeting();
 }
 
 void ATileActor::Deselect()
 {
-	selectionState->SelectDefaultState();
+	SelectionState->SelectDefaultState();
 }
 
 void ATileActor::RecalculateGasLevel()
@@ -96,7 +96,7 @@ void ATileActor::RecalculateGasLevel()
 	int gasLevel = 0;
 	for (int i = 0; i < 8; i++)
 	{
-		if (neighbors[i] != nullptr)
+		if (Neighbors[i] != nullptr)
 		{
 			if (newLevel)
 			{
@@ -108,18 +108,18 @@ void ATileActor::RecalculateGasLevel()
 		}
 	}
 
-	gas->SetGasLevel(gasLevel);
+	Gas->SetGasLevel(gasLevel);
 }
 
 void ATileActor::RecalculateIsConnected()
 {
-	if (gas->GetGasLevel())
+	if (Gas->GetGasLevel())
 	{
 		for (int i = 0; i < 8; i++)
 		{
-			if (neighbors[i] != nullptr && neighbors[i]->gas->IsConnected())
+			if (Neighbors[i] != nullptr && Neighbors[i]->Gas->IsConnected())
 			{
-				gas->SetConnected(true);
+				Gas->SetConnected(true);
 				if (IsVolatile())
 					OnVolatileStateBegin.ExecuteIfBound(this);
 				return;
@@ -127,7 +127,7 @@ void ATileActor::RecalculateIsConnected()
 		}
 	}
 
-	gas->SetConnected(false);
+	Gas->SetConnected(false);
 }
 
 ATileActor* ATileActor::GetTileUnderLocation(const FVector &location)
@@ -150,7 +150,7 @@ ATileActor* ATileActor::GetTileUnderLocation(const FVector &location)
 
 bool ATileActor::IsVolatile() const
 {
-	return gas->GetGasLevel() && gas->IsConnected();
+	return Gas->GetGasLevel() && Gas->IsConnected();
 }
 
 void ATileActor::Target()

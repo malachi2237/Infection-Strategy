@@ -44,7 +44,7 @@ void UTileSystem::BeginPlay()
 		{
 			for (int i = 0; i < 8; i++)
 			{
-				tileGrid[x][y]->neighbors[i] = GetNeighbor(x, y, (Neighbor)i);
+				tileGrid[x][y]->Neighbors[i] = GetNeighbor(x, y, (Neighbor)i);
 			}
 		}
 	}

@@ -133,7 +133,7 @@ void AInfectionStrategyPlayerController::TryTileMovement(Neighbor direction)
 			return;
 		}
 
-		nextTile = currentTile->neighbors[static_cast<int>(direction)];
+		nextTile = currentTile->Neighbors[static_cast<int>(direction)];
 
 		if ((nextTile && nextTile->CanSelect()) && SelectedVehicle->TryMovement())
 		{

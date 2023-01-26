@@ -41,8 +41,12 @@ void UTileMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		PawnOwner->SetActorLocation(FMath::Lerp(StartLocation, EndLocation, MovementTime / CompletionTime));
 		PawnOwner->SetActorRotation(FQuat::Slerp(StartRotation, EndRotation, MovementTime / CompletionTime));
 	}
-	else
+	else if (bCurrentlyMoving)
+	{
+		OnMovementComplete.Broadcast();
 		bCurrentlyMoving = false;
+	}
+		
 }
 
 FVector UTileMovementComponent::CalculateTileDirection(const FVector& direction, float scale) const

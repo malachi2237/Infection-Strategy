@@ -9,6 +9,15 @@ int32 UVehicleWidget::GetRemainingMovement()
 	return selectedVehicle ? selectedVehicle->RemainingMoves() : 0;
 }
 
+void UVehicleWidget::SendOnMovementSelected()
+{
+	OnMovementSelected.ExecuteIfBound();
+}
+
+void UVehicleWidget::SendOnAttackSelected()
+{
+	OnAttackSelected.ExecuteIfBound();
+}
 void UVehicleWidget::SendOnDeselect()
 {
 	OnDeselect.ExecuteIfBound();

@@ -36,7 +36,15 @@ void AInfectionStrategyPlayerController::BeginPlay()
 		vehicleHudInstance = CreateWidget<UVehicleWidget>(this, vehicleHudTemplate);
 
 	if (vehicleHudInstance)
-		vehicleHudInstance->OnDeselect.BindUObject(this, &AInfectionStrategyPlayerController::DeselectUnit);
+	{
+		vehicleHudInstance->OnMovementSelected.BindLambda([this] {
+			bIsMovingUnit = true; bIsTargeting = false; });
+		vehicleHudInstance->OnAttackSelected.BindLambda([this] {
+			bIsMovingUnit = false; bIsTargeting = true; });
+
+		vehicleHudInstance->OnDeselect.BindLambda([this]{ SelectUnit(nullptr); });
+		vehicleHudInstance->OnMove.BindUObject(this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
+	}
 }
 void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 {
@@ -48,11 +56,6 @@ void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 
 		GetPawn()->AddMovementInput(inputVector, 1.f, false);
 	}
-}
-
-void AInfectionStrategyPlayerController::DeselectUnit()
-{
-	SelectUnit(nullptr);
 }
 
 void AInfectionStrategyPlayerController::SetupInputComponent()
@@ -108,6 +111,9 @@ void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
 
 	UndoMovement(movementQueue.Num());
 
+	bIsMovingUnit = false;
+	bIsTargeting = false;
+
 	if (unit && unit->TrySelect(playerId))
 	{
 		if (!vehicleHudInstance->IsInViewport())
@@ -133,7 +139,7 @@ void AInfectionStrategyPlayerController::TryTileMovement(Neighbor direction)
 	ATileActor *currentTile = nullptr;
 	ATileActor *nextTile = nullptr;
 
-	if (selectedVehicle)
+	if (selectedVehicle && bIsMovingUnit)
 	{
 		if (!movementQueue.IsEmpty())
 		{
@@ -209,6 +215,7 @@ void AInfectionStrategyPlayerController::OnConfirmMoveReleased()
 		}
 
 		currentTile->bOccupied = true;
+		bIsMovingUnit = false;
 	}
 }
 

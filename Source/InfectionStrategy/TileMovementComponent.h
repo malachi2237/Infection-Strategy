@@ -6,6 +6,7 @@
 #include "GameFramework/PawnMovementComponent.h"
 #include "TileMovementComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMovementCompletedDelegate);
 /**
  * 
  */
@@ -16,6 +17,9 @@ class INFECTIONSTRATEGY_API UTileMovementComponent : public UPawnMovementCompone
 public:
 	UTileMovementComponent();
 	
+	UPROPERTY(BlueprintAssignable)
+	FOnMovementCompletedDelegate OnMovementComplete;
+
 protected:
 	UPROPERTY(EditAnywhere)
 	float movementSpeed = 500.0f;

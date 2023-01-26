@@ -38,8 +38,6 @@ public:
 	virtual void OnTurnBegin(int32 player) override;
 	virtual void OnTurnEnd(int32 player) override;
 
-	void DeselectUnit();
-
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -77,6 +75,9 @@ private:
 	int32 cameraMoveHoriz = 0; // Input is bring pressed
 	bool bIsTouch; // Is it a touch device
 	float FollowTime; // For how long it has been pressed
+
+	bool bIsMovingUnit = false;
+	bool bIsTargeting = false;
 
 	void OnMoveCameraVerticalPressed(int32 direction);
 	void OnMoveCameraHorizontalPressed(int32 direction);

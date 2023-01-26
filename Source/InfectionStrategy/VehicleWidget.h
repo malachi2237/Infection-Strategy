@@ -9,7 +9,6 @@
 
 class AVehicleUnit;
 
-
 DECLARE_DELEGATE(FUiVehicleActionDelegate);
 /**
  * 
@@ -26,6 +25,9 @@ public:
 
 	int32 GetRemainingMovement();
 
+	FUiVehicleActionDelegate OnMovementSelected;
+	FUiVehicleActionDelegate OnAttackSelected;
+
 	FUiVehicleActionDelegate OnDeselect;
 	FUiVehicleActionDelegate OnAttack;
 	FUiVehicleActionDelegate OnMove;
@@ -35,6 +37,12 @@ public:
 
 protected:
 	AVehicleUnit* selectedVehicle;
+
+	UFUNCTION(BlueprintCallable)
+	void SendOnMovementSelected();
+
+	UFUNCTION(BlueprintCallable)
+	void SendOnAttackSelected();
 
 	UFUNCTION(BlueprintCallable)
 	void SendOnDeselect();

@@ -48,12 +48,12 @@ void AInfectionStrategyPlayerController::BeginPlay()
 	}
 }
 
-void AInfectionStrategyPlayerController::OnTurnBegin(int32 player)
+void AInfectionStrategyPlayerController::OnTurnBegin(const int32 player)
 {
 	playerId = player;
 }
 
-void AInfectionStrategyPlayerController::OnTurnEnd(int32 player)
+void AInfectionStrategyPlayerController::OnTurnEnd(const int32 player)
 {
 	SelectUnit(nullptr);
 }

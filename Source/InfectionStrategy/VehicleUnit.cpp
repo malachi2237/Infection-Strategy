@@ -127,12 +127,12 @@ void AVehicleUnit::Untarget()
 
 }
 
-void AVehicleUnit::OnTurnBegin(int32 playerId)
+void AVehicleUnit::OnTurnBegin(const int32 playerId)
 {
 
 }
 
-void AVehicleUnit::OnTurnEnd(int32 playerId)
+void AVehicleUnit::OnTurnEnd(const int32 playerId)
 {
 	currentMovement = 0;
 	bCanAttack = true;

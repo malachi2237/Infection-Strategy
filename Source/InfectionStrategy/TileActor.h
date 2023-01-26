@@ -60,8 +60,8 @@ public:
 	/* End Targetable interface */
 	
 	/* TurnBased Interface */
-	virtual void OnTurnBegin(int32 playerId) override;
-	virtual void OnTurnEnd(int32 playerId) override;
+	virtual void OnTurnBegin(const int32 playerId) override;
+	virtual void OnTurnEnd(const int32 playerId) override;
 	/* End TurnBased Interface */
 
 	/** Array of adjacent tiles */

@@ -45,8 +45,8 @@ public:
 	ATileActor* GetNeighbor(const int32 x, const int32 y, const ENeighbor neighborType);
 
 	/* TurnBased Interface*/
-	virtual void OnTurnBegin(int32 playerId) override;
-	virtual void OnTurnEnd(int32 playerId) override;
+	virtual void OnTurnBegin(const int32 playerId) override;
+	virtual void OnTurnEnd(const int32 playerId) override;
 	/* End TurnBased Interface */
 
 	/** Height of the tile grid */

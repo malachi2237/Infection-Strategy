@@ -114,7 +114,7 @@ void UTileSystem::MarkTileAsVolatile(ATileActor* tile)
 	VolatileTiles.Add(tile);
 }
 
-void UTileSystem::OnTurnBegin(int32 playerId)
+void UTileSystem::OnTurnBegin(const int32 playerId)
 {
 	VolatileTiles = VolatileTiles.FilterByPredicate([](ATileActor* tile) { return tile->IsVolatile(); });
 
@@ -122,7 +122,7 @@ void UTileSystem::OnTurnBegin(int32 playerId)
 		tile->OnTurnBegin(playerId);
 }
 
-void UTileSystem::OnTurnEnd(int32 playerId)
+void UTileSystem::OnTurnEnd(const int32 playerId)
 {
 	VolatileTiles = VolatileTiles.FilterByPredicate([](ATileActor* tile) { return tile->IsVolatile(); });
 

@@ -163,12 +163,12 @@ void ATileActor::Untarget()
 
 }
 
-void ATileActor::OnTurnBegin(int32 playerId)
+void ATileActor::OnTurnBegin(const int32 playerId)
 {
 
 }
 
-void ATileActor::OnTurnEnd(int32 playerId)
+void ATileActor::OnTurnEnd(const int32 playerId)
 {
 
 }

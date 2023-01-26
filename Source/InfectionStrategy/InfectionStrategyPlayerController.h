@@ -29,8 +29,8 @@ public:
 	virtual void BeginPlay() override;
 
 	/** TurnBased Interface */
-	virtual void OnTurnBegin(int32 player) override;
-	virtual void OnTurnEnd(int32 player) override;
+	virtual void OnTurnBegin(const int32 player) override;
+	virtual void OnTurnEnd(const int32 player) override;
 	/** End TurnBased Interface */
 
 	/** Sets ownership of vehicle and performs some setup on it.

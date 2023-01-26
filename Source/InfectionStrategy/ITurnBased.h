@@ -13,12 +13,21 @@ class UTurnBased : public UInterface
 	GENERATED_BODY()
 };
 
+/** Interface for objects that are to be updated at the beginning and end of turns in a turn-based game */
 class INFECTIONSTRATEGY_API ITurnBased
 {
 	GENERATED_BODY()
 
 public:
 	ITurnBased() {};
-	virtual void OnTurnBegin(int32 playerId) = 0;
-	virtual void OnTurnEnd(int32 playerId) = 0;
+
+	/** Method to be called at the start of a turn.
+	 * @param playerId - Id of the player whose turn is beginning
+	*/
+	virtual void OnTurnBegin(const int32 playerId) = 0;
+
+	/** Method to be called at the start of a turn.
+	 * @param playerId - Id of the player whose turn is ending
+	*/
+	virtual void OnTurnEnd(const int32 playerId) = 0;
 };

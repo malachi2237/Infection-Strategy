@@ -48,6 +48,8 @@ void AVehicleUnit::BeginPlay()
 		selectionState->OnDefaultState.BindLambda([this, defaultMaterial]
 			{mesh->SetMaterial(0, defaultMaterial); });
 	}
+
+	tileMovement->OnMovementComplete.AddDynamic(this, &AVehicleUnit::OnMovementComplete);
 }
 
 // Called every frame
@@ -55,6 +57,11 @@ void AVehicleUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	/*MoveTo*/
+}
+
+void AVehicleUnit::OnMovementComplete()
+{
+	tile = ATileActor::GetTileUnderLocation(GetActorLocation());
 }
 
 void AVehicleUnit::OnSelection()

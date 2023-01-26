@@ -11,6 +11,7 @@
 #include "Blueprint/UserWidget.h"
 #include "VehicleWidget.h"
 #include "TileSystem.h"
+#include "TileMovementComponent.h"
 #include "VehicleUnit.h"
 #include "TileActor.h"
 
@@ -58,6 +59,14 @@ void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 	}
 }
 
+void AInfectionStrategyPlayerController::ClaimUnit(AVehicleUnit* unit, const int32 ownerId)
+{
+	unit->SetPlayerOwner(ownerId);
+	if (auto tileMoveComp = Cast<UTileMovementComponent>(unit->GetMovementComponent()))
+	{
+		//tileMoveComp->OnMovementComplete.Add()
+	}
+}
 void AInfectionStrategyPlayerController::SetupInputComponent()
 {
 	// set up gameplay key bindings

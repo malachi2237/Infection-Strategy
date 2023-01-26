@@ -35,6 +35,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Deselect();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnMovementCompleted();
+
 protected:
 	AVehicleUnit* selectedVehicle;
 

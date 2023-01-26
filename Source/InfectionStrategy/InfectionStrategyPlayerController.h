@@ -38,6 +38,8 @@ public:
 	virtual void OnTurnBegin(int32 player) override;
 	virtual void OnTurnEnd(int32 player) override;
 
+	void ClaimUnit(AVehicleUnit* unit, const int32 ownerId);
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;

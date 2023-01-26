@@ -45,7 +45,7 @@ void AInfectionStrategyGameMode::BeginPlay()
 
 			if (newUnit != nullptr)
 			{
-				newUnit->SetOwner(0);
+				newUnit->SetPlayerOwner(0);
 				tileSystem->OccupyTile(i, 0);
 
 				vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));

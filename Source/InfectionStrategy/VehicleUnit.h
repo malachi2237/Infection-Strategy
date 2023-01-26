@@ -63,6 +63,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UTileMovementComponent* tileMovement;
 
+	UFUNCTION()
+	void OnMovementComplete();
+
 	void OnSelection();
 
 	bool CanMove();

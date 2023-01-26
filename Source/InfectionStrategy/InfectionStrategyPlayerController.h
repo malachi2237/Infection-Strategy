@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Containers/Deque.h"
 #include "ITurnBased.h"
+#include "Neighbor.h"
 #include "InfectionStrategyPlayerController.generated.h"
 
 /** Forward declaration to improve compiling times */
@@ -15,7 +16,6 @@ class UUserWidget;
 class UVehicleWidget;
 class AVehicleUnit;
 class ATileActor;
-enum class Neighbor;
 
 /** PlayerController for InfectionStrategy. */
 UCLASS()
@@ -56,7 +56,7 @@ protected:
 	/** Checks if given movement is possible for the selected unit. If it is, adds it to MovevementQueue.
 	 * @param direction - Direction movement should be attempted
 	 */
-	void TryTileMovement(const Neighbor direction);
+	void TryTileMovement(const ENeighbor direction);
 
 	/** Undo the last movement for the selected unit. */
 	void UndoMovement();

@@ -16,93 +16,97 @@ void UTileSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	float tileScale = tileWidth / 100.0f;
-	int xOffset = -gridWidth / 2;
-	int yOffset = gridHeight / 2;
+	float tileScale = TileWidth / 100.0f;
+	int xOffset = -GridWidth / 2;
+	int yOffset = GridHeight / 2;
 
 	StaticCast<AInfectionStrategyGameMode *>(GetWorld()->GetAuthGameMode())->TileSystem = this;
 
-	for (int x = 0; x < gridHeight; x++)
+	for (int x = 0; x < GridHeight; x++)
 	{
-		tileGrid.Add(TArray<ATileActor*>());
+		TileGrid.Add(TArray<ATileActor*>());
 
-		for (int y = 0; y < gridWidth; y++)
+		for (int y = 0; y < GridWidth; y++)
 		{
-			FVector const *spawnLocation = new FVector((yOffset - y) * tileWidth, (x + xOffset) * tileWidth, 0.0f);
+			FVector const *spawnLocation = new FVector((yOffset - y) * TileWidth, (x + xOffset) * TileWidth, 0.0f);
 
-			auto newTileActor = (ATileActor*)GetWorld()->SpawnActor(tileTemplate, spawnLocation);
+			auto newTileActor = (ATileActor*)GetWorld()->SpawnActor(TileTemplate, spawnLocation);
 
 			newTileActor->SetCoordinates(x, y);
 			newTileActor->OnVolatileStateBegin.BindUObject(this, &UTileSystem::MarkTileAsVolatile);
-			tileGrid[x].Add(newTileActor);
+			TileGrid[x].Add(newTileActor);
 		}
 	}
 
-	for (int x = 0; x < gridWidth; x++)
+	for (int x = 0; x < GridWidth; x++)
 	{
-		for (int y = 0; y < gridHeight; y++)
+		for (int y = 0; y < GridHeight; y++)
 		{
 			for (int i = 0; i < 8; i++)
 			{
-				tileGrid[x][y]->Neighbors[i] = GetNeighbor(x, y, (Neighbor)i);
+				TileGrid[x][y]->Neighbors[i] = GetNeighbor(x, y, (ENeighbor)i);
 			}
 		}
 	}
 }
 
-ATileActor* UTileSystem::GetNeighbor(int32 x, int32 y, Neighbor neighborType)
+ATileActor* UTileSystem::GetNeighbor(const int32 x, const int32 y, const ENeighbor neighborType)
 {
 	ATileActor* selectedNeighbor = nullptr;
 
 	switch (neighborType)
 	{
-	case Neighbor::Up:
+	case ENeighbor::Up:
 		if (y > 0)
-			selectedNeighbor = tileGrid[x][y - 1];
+			selectedNeighbor = TileGrid[x][y - 1];
 		break;
-	case Neighbor::Down:
-		if (y + 1 < gridHeight)
-			selectedNeighbor = tileGrid[x][y + 1];
+	case ENeighbor::Down:
+		if (y + 1 < GridHeight)
+			selectedNeighbor = TileGrid[x][y + 1];
 		break;
-	case Neighbor::Left:
+	case ENeighbor::Left:
 		if (x > 0)
-			selectedNeighbor = tileGrid[x - 1][y];
+			selectedNeighbor = TileGrid[x - 1][y];
 		break;
-	case Neighbor::Right:
-		if (x + 1 < gridWidth)
-			selectedNeighbor = tileGrid[x + 1][y];
+	case ENeighbor::Right:
+		if (x + 1 < GridWidth)
+			selectedNeighbor = TileGrid[x + 1][y];
 		break;
-	case Neighbor::TopLeft:
+	case ENeighbor::TopLeft:
 		if (y > 0 && x > 0)
-			selectedNeighbor = tileGrid[x - 1][y - 1];
+			selectedNeighbor = TileGrid[x - 1][y - 1];
 		break;
-	case Neighbor::TopRight:
-		if (y > 0 && x + 1 < gridWidth)
-			selectedNeighbor = tileGrid[x + 1][y - 1];
+	case ENeighbor::TopRight:
+		if (y > 0 && x + 1 < GridWidth)
+			selectedNeighbor = TileGrid[x + 1][y - 1];
 		break;
-	case Neighbor::BottomLeft:
-		if (y + 1 < gridHeight && x > 0)
-			selectedNeighbor = tileGrid[x - 1][y + 1];
+	case ENeighbor::BottomLeft:
+		if (y + 1 < GridHeight && x > 0)
+			selectedNeighbor = TileGrid[x - 1][y + 1];
 		break;
-	case Neighbor::BottomRight:
-		if (y + 1 < gridHeight && x + 1< gridWidth)
-			selectedNeighbor = tileGrid[x + 1][y + 1];
+	case ENeighbor::BottomRight:
+		if (y + 1 < GridHeight && x + 1< GridWidth)
+			selectedNeighbor = TileGrid[x + 1][y + 1];
 	}
 
 	return selectedNeighbor;
 }
 
-bool UTileSystem::OccupyTile(int32 x, int32 y)
+bool UTileSystem::OccupyTile(const int32 x, const int32 y) const
 {
-	ATileActor* tile = tileGrid[x][y];
+	if (x < GridWidth && y < GridHeight)
+	{
+		ATileActor* tile = TileGrid[x][y];
 
-	//return false if tile was already occupied
-	return tile->bOccupied != (tile->bOccupied = true);
+		return tile->bOccupied != (tile->bOccupied = true);
+	}
+
+	return false;
 }
 
-FVector UTileSystem::GetLocationAt(int32 x, int32 y)
+FVector UTileSystem::GetLocationAtTile(const int32 x, const int32 y) const
 {
-	return tileGrid[x][y]->GetActorLocation();
+	return TileGrid[x][y]->GetActorLocation();
 }
 
 void UTileSystem::MarkTileAsVolatile(ATileActor* tile)

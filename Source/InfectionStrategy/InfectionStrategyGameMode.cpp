@@ -38,7 +38,7 @@ void AInfectionStrategyGameMode::BeginPlay()
 	{
 		for (int i = 0; i < 5; i++)
 		{
-			const FVector location = TileSystem->GetLocationAt(i, 0) + FVector(0, 0, 25.0f);
+			const FVector location = TileSystem->GetLocationAtTile(i, 0) + FVector(0, 0, 25.0f);
 			const FRotator rotator = FRotator::ZeroRotator;
 
 			AVehicleUnit* newUnit = (AVehicleUnit*)GetWorld()->SpawnActor<AVehicleUnit>(VehicleTemplate, location, rotator);

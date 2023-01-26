@@ -17,7 +17,7 @@
 
 #define MAX_UNITS 5
 
-DECLARE_DELEGATE_OneParam(FTryTileMovementDelegate, Neighbor);
+DECLARE_DELEGATE_OneParam(FTryTileMovementDelegate, ENeighbor);
 DECLARE_DELEGATE_OneParam(FCameraMovementDelegate, int32);
 
 AInfectionStrategyPlayerController::AInfectionStrategyPlayerController()
@@ -86,10 +86,10 @@ void AInfectionStrategyPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("SetDestination", IE_Released, this, &AInfectionStrategyPlayerController::OnSelectUnitReleased);
 
-	InputComponent->BindAction<FTryTileMovementDelegate>("MoveUp", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, Neighbor::Up);
-	InputComponent->BindAction<FTryTileMovementDelegate>("MoveDown", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, Neighbor::Down);
-	InputComponent->BindAction<FTryTileMovementDelegate>("MoveLeft", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, Neighbor::Left);
-	InputComponent->BindAction<FTryTileMovementDelegate>("MoveRight", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, Neighbor::Right);
+	InputComponent->BindAction<FTryTileMovementDelegate>("MoveUp", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, ENeighbor::Up);
+	InputComponent->BindAction<FTryTileMovementDelegate>("MoveDown", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, ENeighbor::Down);
+	InputComponent->BindAction<FTryTileMovementDelegate>("MoveLeft", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, ENeighbor::Left);
+	InputComponent->BindAction<FTryTileMovementDelegate>("MoveRight", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, ENeighbor::Right);
 
 	InputComponent->BindAction<FCameraMovementDelegate>("CameraUp", IE_Pressed, this, &AInfectionStrategyPlayerController::OnMoveCameraVerticalPressed, 1);
 	InputComponent->BindAction<FCameraMovementDelegate>("CameraDown", IE_Pressed, this, &AInfectionStrategyPlayerController::OnMoveCameraVerticalPressed, -1);
@@ -107,7 +107,7 @@ void AInfectionStrategyPlayerController::SetupInputComponent()
 
 }
 
-void AInfectionStrategyPlayerController::TryTileMovement(Neighbor direction)
+void AInfectionStrategyPlayerController::TryTileMovement(ENeighbor direction)
 {
 	ATileActor* currentTile = nullptr;
 	ATileActor* nextTile = nullptr;

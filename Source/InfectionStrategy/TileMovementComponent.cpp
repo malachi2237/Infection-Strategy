@@ -49,7 +49,7 @@ void UTileMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		
 }
 
-FVector UTileMovementComponent::CalculateTileDirection(const FVector& direction, float scale) const
+FVector UTileMovementComponent::CalculateTileDirection(const FVector& direction, const float scale) const
 {
 	const ATileActor *targetTile = ATileActor::GetTileUnderLocation(PawnOwner->GetActorLocation() + direction * scale);
 	const ATileActor *currentTile = ATileActor::GetTileUnderLocation(PawnOwner->GetActorLocation());

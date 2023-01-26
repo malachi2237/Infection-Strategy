@@ -9,6 +9,7 @@
 class UTileSystem;
 class AVehicleUnit;
 
+/* The default game mode for the project. Establishes rules and Pawns. */
 UCLASS(minimalapi)
 class AInfectionStrategyGameMode : public AGameModeBase
 {
@@ -19,21 +20,33 @@ public:
 
 	virtual void BeginPlay() override;
 
+	/**
+	 * Ends the current player's turn for all Actors.
+	 * @return The Id of the player whose turn is next.
+	 */
 	UFUNCTION(BlueprintCallable)
-	int EndTurn();
+	int32 EndTurn();
 	
-
-	UTileSystem* tileSystem = nullptr;
+	/** The current UTileSystem in use. */
+	UPROPERTY()
+	UTileSystem* TileSystem = nullptr;
 
 private:
-	int activePlayerId = 0;
-	int turnNumber = 1;
+	/** Player whose turn it currently is */
+	int32 ActivePlayerId = 0;
 
+	/** Count of the current turn. Increments after both players play their turns. */
+	uint32 TurnNumber = 1;
+
+	/** Collection of units being used*/
 	UPROPERTY()
-	TArray<TWeakObjectPtr<AVehicleUnit>> vehicles;
+	TArray<TWeakObjectPtr<AVehicleUnit>> Vehicles;
 
+	/** Template used to spawn units.
+	 * Will be removed when players can select their own unit types
+	 */
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AVehicleUnit> vehicleTemplate;
+	TSubclassOf<AVehicleUnit> VehicleTemplate;
 };
 
 

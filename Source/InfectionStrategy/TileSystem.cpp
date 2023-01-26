@@ -20,7 +20,7 @@ void UTileSystem::BeginPlay()
 	int xOffset = -gridWidth / 2;
 	int yOffset = gridHeight / 2;
 
-	StaticCast<AInfectionStrategyGameMode *>(GetWorld()->GetAuthGameMode())->tileSystem = this;
+	StaticCast<AInfectionStrategyGameMode *>(GetWorld()->GetAuthGameMode())->TileSystem = this;
 
 	for (int x = 0; x < gridHeight; x++)
 	{

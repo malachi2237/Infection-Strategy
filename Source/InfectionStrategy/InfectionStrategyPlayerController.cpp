@@ -28,25 +28,45 @@ AInfectionStrategyPlayerController::AInfectionStrategyPlayerController()
 
 void AInfectionStrategyPlayerController::BeginPlay()
 {
-	if (hudTemplate)
-		hudInstance = CreateWidget(this, hudTemplate);
+	if (HudTemplate)
+		HudInstance = CreateWidget(this, HudTemplate);
 
-	hudInstance->AddToViewport();
+	HudInstance->AddToViewport();
 
-	if (vehicleHudTemplate)
-		vehicleHudInstance = CreateWidget<UVehicleWidget>(this, vehicleHudTemplate);
+	if (VehicleHudTemplate)
+		VehicleHudInstance = CreateWidget<UVehicleWidget>(this, VehicleHudTemplate);
 
-	if (vehicleHudInstance)
+	if (VehicleHudInstance)
 	{
-		vehicleHudInstance->OnMovementSelected.BindLambda([this] {
+		VehicleHudInstance->OnMovementSelected.BindLambda([this] {
 			bIsMovingUnit = true; bIsTargeting = false; });
-		vehicleHudInstance->OnAttackSelected.BindLambda([this] {
+		VehicleHudInstance->OnAttackSelected.BindLambda([this] {
 			bIsMovingUnit = false; bIsTargeting = true; });
 
-		vehicleHudInstance->OnDeselect.BindLambda([this]{ SelectUnit(nullptr); });
-		vehicleHudInstance->OnMove.BindUObject(this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
+		VehicleHudInstance->OnDeselect.BindLambda([this]{ SelectUnit(nullptr); });
+		VehicleHudInstance->OnMove.BindUObject(this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
 	}
 }
+
+void AInfectionStrategyPlayerController::OnTurnBegin(int32 player)
+{
+	playerId = player;
+}
+
+void AInfectionStrategyPlayerController::OnTurnEnd(int32 player)
+{
+	SelectUnit(nullptr);
+}
+
+void AInfectionStrategyPlayerController::ClaimUnit(AVehicleUnit* unit, const int32 ownerId)
+{
+	unit->SetPlayerOwner(ownerId);
+	if (auto tileMoveComp = Cast<UTileMovementComponent>(unit->GetMovementComponent()))
+	{
+		//tileMoveComp->OnMovementComplete.Add()
+	}
+}
+
 void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
@@ -59,14 +79,6 @@ void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 	}
 }
 
-void AInfectionStrategyPlayerController::ClaimUnit(AVehicleUnit* unit, const int32 ownerId)
-{
-	unit->SetPlayerOwner(ownerId);
-	if (auto tileMoveComp = Cast<UTileMovementComponent>(unit->GetMovementComponent()))
-	{
-		//tileMoveComp->OnMovementComplete.Add()
-	}
-}
 void AInfectionStrategyPlayerController::SetupInputComponent()
 {
 	// set up gameplay key bindings
@@ -95,6 +107,98 @@ void AInfectionStrategyPlayerController::SetupInputComponent()
 
 }
 
+void AInfectionStrategyPlayerController::TryTileMovement(Neighbor direction)
+{
+	ATileActor* currentTile = nullptr;
+	ATileActor* nextTile = nullptr;
+
+	if (SelectedVehicle && bIsMovingUnit)
+	{
+		if (!MovementQueue.IsEmpty())
+		{
+			currentTile = MovementQueue.Last();
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Tile from Deque"));
+		}
+		else if (SelectedVehicle->tile)
+		{
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Tile from vehicle"));
+			currentTile = SelectedVehicle->tile;
+		}
+		else
+		{
+			if (GEngine)
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("No Tile found"));
+			return;
+		}
+
+		nextTile = currentTile->neighbors[static_cast<int>(direction)];
+
+		if ((nextTile && nextTile->CanSelect()) && SelectedVehicle->TryMovement())
+		{
+			nextTile->SelectForMovement();
+			MovementQueue.PushLast(nextTile);
+		}
+	}
+}
+
+void AInfectionStrategyPlayerController::UndoMovement()
+{
+	ATileActor* lastTile;
+
+	if (MovementQueue.TryPopLast(lastTile))
+		lastTile->Deselect();
+
+	if (SelectedVehicle)
+		SelectedVehicle->UndoMovement(1);
+}
+
+void AInfectionStrategyPlayerController::UndoAllMovement()
+{
+	ATileActor* lastTile;
+	int moveCount = MovementQueue.Num();
+
+	while (!MovementQueue.IsEmpty())
+	{
+		if (MovementQueue.TryPopLast(lastTile))
+			lastTile->Deselect();
+	}
+
+	if (SelectedVehicle)
+		SelectedVehicle->UndoMovement(moveCount);
+}
+
+void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
+{
+	if (SelectedVehicle)
+		SelectedVehicle->Deselect();
+
+	UndoAllMovement();
+
+	bIsMovingUnit = false;
+	bIsTargeting = false;
+
+	if (unit && unit->TrySelect(playerId))
+	{
+		if (!VehicleHudInstance->IsInViewport())
+			VehicleHudInstance->AddToViewport();
+
+		VehicleHudInstance->SetSelectedVehicle(unit);
+		
+		SelectedVehicle = unit;
+		
+		return;
+	}
+
+	SelectedVehicle = nullptr;
+	if (VehicleHudInstance)
+	{
+		VehicleHudInstance->RemoveFromViewport();
+		VehicleHudInstance->SetSelectedVehicle(SelectedVehicle);
+	}
+}
+
 void AInfectionStrategyPlayerController::OnSelectUnitReleased()
 {
 	// Player is no longer pressing the input
@@ -113,111 +217,21 @@ void AInfectionStrategyPlayerController::OnSelectUnitReleased()
 
 }
 
-void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
-{
-	if (selectedVehicle)
-		selectedVehicle->Deselect();
-
-	UndoMovement(movementQueue.Num());
-
-	bIsMovingUnit = false;
-	bIsTargeting = false;
-
-	if (unit && unit->TrySelect(playerId))
-	{
-		if (!vehicleHudInstance->IsInViewport())
-			vehicleHudInstance->AddToViewport();
-
-		vehicleHudInstance->SetSelectedVehicle(unit);
-		
-		selectedVehicle = unit;
-		
-		return;
-	}
-
-	selectedVehicle = nullptr;
-	if (vehicleHudInstance)
-	{
-		vehicleHudInstance->RemoveFromViewport();
-		vehicleHudInstance->SetSelectedVehicle(selectedVehicle);
-	}
-}
-
-void AInfectionStrategyPlayerController::TryTileMovement(Neighbor direction)
-{
-	ATileActor *currentTile = nullptr;
-	ATileActor *nextTile = nullptr;
-
-	if (selectedVehicle && bIsMovingUnit)
-	{
-		if (!movementQueue.IsEmpty())
-		{
-			currentTile = movementQueue.Last();
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Tile from Deque"));
-		}
-		else if (selectedVehicle->tile)
-		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Tile from vehicle"));
-			currentTile = selectedVehicle->tile;
-		}		
-		else
-		{
-			if (GEngine)
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("No Tile found"));
-			return;
-		}
-
-		nextTile = currentTile->neighbors[static_cast<int>(direction)];
-
-		if ((nextTile && nextTile->CanSelect()) && selectedVehicle->TryMovement())
-		{
-			nextTile->SelectForMovement();
-			movementQueue.PushLast(nextTile);
-		}
-	}
-}
-
-void AInfectionStrategyPlayerController::UndoMovement()
-{
-	ATileActor* lastTile;
-
-	if (movementQueue.TryPopLast(lastTile))
-		lastTile->Deselect();
-
-	if (selectedVehicle)
-		selectedVehicle->UndoMovement(1);
-}
-
-void AInfectionStrategyPlayerController::UndoMovement(int32 moveCount)
-{
-	ATileActor* lastTile;
-
-	while (!movementQueue.IsEmpty())
-	{
-		if (movementQueue.TryPopLast(lastTile))
-			lastTile->Deselect();
-	}
-
-	if (selectedVehicle)
-		selectedVehicle->UndoMovement(moveCount);
-}
 void AInfectionStrategyPlayerController::OnConfirmMoveReleased()
 {
-	if (selectedVehicle)
+	if (SelectedVehicle)
 	{
-		ATileActor* currentTile = selectedVehicle->tile;
-		FVector previousLocation = selectedVehicle->GetActorLocation();
+		ATileActor* currentTile = SelectedVehicle->tile;
+		FVector previousLocation = SelectedVehicle->GetActorLocation();
 
 		currentTile->bOccupied = false;
 
-		while (movementQueue.TryPopFirst(currentTile))
+		while (MovementQueue.TryPopFirst(currentTile))
 		{
 			FVector direction = currentTile->GetActorLocation() - previousLocation;
 			direction.Z += 30.f;
 			direction.Normalize();
-			selectedVehicle->AddMovementInput(direction, FVector::Dist(previousLocation, currentTile->GetActorLocation()));
+			SelectedVehicle->AddMovementInput(direction, FVector::Dist(previousLocation, currentTile->GetActorLocation()));
 
 			currentTile->Deselect();
 			previousLocation = currentTile->GetActorLocation();
@@ -228,14 +242,14 @@ void AInfectionStrategyPlayerController::OnConfirmMoveReleased()
 	}
 }
 
-void AInfectionStrategyPlayerController::OnMoveCameraVerticalPressed(int32 direction)
+void AInfectionStrategyPlayerController::OnMoveCameraVerticalPressed(const int32 direction)
 {
-	cameraMoveVert = direction;
+	cameraMoveVert = FMath::Clamp(-1, 1, direction);
 }
 
-void AInfectionStrategyPlayerController::OnMoveCameraHorizontalPressed(int32 direction)
+void AInfectionStrategyPlayerController::OnMoveCameraHorizontalPressed(const int32 direction)
 {
-	cameraMoveHoriz = direction;
+	cameraMoveHoriz = FMath::Clamp(-1, 1, direction);
 }
 
 void AInfectionStrategyPlayerController::OnMoveCameraVerticalReleased()
@@ -246,14 +260,4 @@ void AInfectionStrategyPlayerController::OnMoveCameraVerticalReleased()
 void AInfectionStrategyPlayerController::OnMoveCameraHorizontalReleased()
 {
 	cameraMoveHoriz = 0;
-}
-
-void AInfectionStrategyPlayerController::OnTurnBegin(int32 player)
-{
-	playerId = player;
-}
-
-void AInfectionStrategyPlayerController::OnTurnEnd(int32 player)
-{
-	SelectUnit(nullptr);
 }

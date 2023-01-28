@@ -244,12 +244,12 @@ void AInfectionStrategyPlayerController::OnConfirmMoveReleased()
 
 void AInfectionStrategyPlayerController::OnMoveCameraVerticalPressed(const int32 direction)
 {
-	cameraMoveVert = FMath::Clamp(-1, 1, direction);
+	cameraMoveVert = FMath::Clamp(direction, -1, 1);
 }
 
 void AInfectionStrategyPlayerController::OnMoveCameraHorizontalPressed(const int32 direction)
 {
-	cameraMoveHoriz = FMath::Clamp(-1, 1, direction);
+	cameraMoveHoriz = FMath::Clamp(direction, -1, 1);
 }
 
 void AInfectionStrategyPlayerController::OnMoveCameraVerticalReleased()

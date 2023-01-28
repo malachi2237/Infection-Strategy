@@ -106,6 +106,9 @@ bool UTileSystem::OccupyTile(const int32 x, const int32 y) const
 
 FVector UTileSystem::GetLocationAtTile(const int32 x, const int32 y) const
 {
+	check(x < GridWidth);
+	check(y < GridHeight);
+
 	return TileGrid[x][y]->GetActorLocation();
 }
 

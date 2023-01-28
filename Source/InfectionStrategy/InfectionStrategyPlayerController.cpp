@@ -120,11 +120,11 @@ void AInfectionStrategyPlayerController::TryTileMovement(ENeighbor direction)
 			if (GEngine)
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Tile from Deque"));
 		}
-		else if (SelectedVehicle->tile)
+		else if (SelectedVehicle->Tile)
 		{
 			if (GEngine)
 				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Tile from vehicle"));
-			currentTile = SelectedVehicle->tile;
+			currentTile = SelectedVehicle->Tile;
 		}
 		else
 		{
@@ -221,7 +221,7 @@ void AInfectionStrategyPlayerController::OnConfirmMoveReleased()
 {
 	if (SelectedVehicle)
 	{
-		ATileActor* currentTile = SelectedVehicle->tile;
+		ATileActor* currentTile = SelectedVehicle->Tile;
 		FVector previousLocation = SelectedVehicle->GetActorLocation();
 
 		currentTile->bOccupied = false;

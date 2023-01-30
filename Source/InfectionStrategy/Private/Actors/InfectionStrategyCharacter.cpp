@@ -14,7 +14,7 @@
 
 AInfectionStrategyCharacter::AInfectionStrategyCharacter()
 {
-	movementComponent = CreateDefaultSubobject<UStrategyMovementComponent>(TEXT("MovementComponent"));
+	MovementComponent = CreateDefaultSubobject<UStrategyMovementComponent>(TEXT("MovementComponent"));
 
 	// Don't rotate character to camera direction
 	bUseControllerRotationPitch = false;

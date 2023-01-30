@@ -9,5 +9,6 @@ public class InfectionStrategy : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "NavigationSystem", "AIModule", "Niagara", "UMG" });
+		PublicIncludePaths.AddRange(new string[] { "InfectionStrategy/Private/Actors", "InfectionStrategy/Private/Components", "InfectionStrategy/Private/Enums", "InfectionStrategy/Private/Interfaces", "InfectionStrategy/Private/Widgets" });
     }
 }

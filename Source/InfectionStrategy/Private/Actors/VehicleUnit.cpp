@@ -12,26 +12,26 @@ AVehicleUnit::AVehicleUnit()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile Mesh"));
-	SetRootComponent(mesh);
-	mesh->SetMobility(EComponentMobility::Movable);
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Tile Mesh"));
+	SetRootComponent(Mesh);
+	Mesh->SetMobility(EComponentMobility::Movable);
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeVisualAsset(TEXT("/Game/StarterContent/Shapes/Shape_Cube.Shape_Cube"));
 
 	if (CubeVisualAsset.Succeeded())
 	{
-		mesh->SetStaticMesh(CubeVisualAsset.Object);
-		mesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		Mesh->SetStaticMesh(CubeVisualAsset.Object);
+		Mesh->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
 	}
 
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> SelectionMaterialVisualAsset(TEXT("/Game/Materials/MI_TileSelected.MI_TileSelected"));
 
 	if (SelectionMaterialVisualAsset.Succeeded())
-		selectedStateMaterial = SelectionMaterialVisualAsset.Object;
+		SelectedStateMaterial = SelectionMaterialVisualAsset.Object;
 
-	mesh->SetWorldScale3D(FVector(0.25f, 0.25f, 0.25f));
+	Mesh->SetWorldScale3D(FVector(0.25f, 0.25f, 0.25f));
 
-	selectionState = CreateDefaultSubobject<USelectionStateComponent>(TEXT("Selection State"));
-	tileMovement = CreateDefaultSubobject<UTileMovementComponent>(TEXT("MovementComponent"));
+	SelectionState = CreateDefaultSubobject<USelectionStateComponent>(TEXT("Selection State"));
+	TileMovement = CreateDefaultSubobject<UTileMovementComponent>(TEXT("MovementComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -40,16 +40,16 @@ void AVehicleUnit::BeginPlay()
 	Super::BeginPlay();
 	SpawnDefaultController();
 
-	UMaterialInterface* defaultMaterial = mesh->GetMaterial(0);
-	selectionState->OnMovementSelected.BindUObject(this, &AVehicleUnit::OnSelection);
+	UMaterialInterface* defaultMaterial = Mesh->GetMaterial(0);
+	SelectionState->OnMovementSelected.BindUObject(this, &AVehicleUnit::OnSelection);
 
 	if (defaultMaterial != nullptr)
 	{
-		selectionState->OnDefaultState.BindLambda([this, defaultMaterial]
-			{mesh->SetMaterial(0, defaultMaterial); });
+		SelectionState->OnDefaultState.BindLambda([this, defaultMaterial]
+			{Mesh->SetMaterial(0, defaultMaterial); });
 	}
 
-	tileMovement->OnMovementComplete.AddDynamic(this, &AVehicleUnit::OnMovementComplete);
+	TileMovement->OnMovementComplete.AddDynamic(this, &AVehicleUnit::OnMovementComplete);
 }
 
 // Called every frame
@@ -61,20 +61,20 @@ void AVehicleUnit::Tick(float DeltaTime)
 
 void AVehicleUnit::OnMovementComplete()
 {
-	tile = ATileActor::GetTileUnderLocation(GetActorLocation());
+	Tile = ATileActor::GetTileUnderLocation(GetActorLocation());
 }
 
 void AVehicleUnit::OnSelection()
 {
-	mesh->SetMaterial(0, selectedStateMaterial);
-	tile = ATileActor::GetTileUnderLocation(GetActorLocation());
+	Mesh->SetMaterial(0, SelectedStateMaterial);
+	Tile = ATileActor::GetTileUnderLocation(GetActorLocation());
 }
 
 bool AVehicleUnit::TrySelect(int32 playerId)
 {
-	if ((playerId == owner) && (CanMove() || bCanAttack))
+	if ((playerId == Owner) && (CanMove() || bCanAttack))
 	{
-		selectionState->SelectForMovement();
+		SelectionState->SelectForMovement();
 		return true;
 	}
 
@@ -83,24 +83,24 @@ bool AVehicleUnit::TrySelect(int32 playerId)
 
 void AVehicleUnit::Deselect()
 {
-	selectionState->SelectDefaultState();
+	SelectionState->SelectDefaultState();
 }
 
 bool AVehicleUnit::CanMove()
 {
-	return currentMovement < maxMovement;
+	return CurrentMovement < MaxMovement;
 }
 
 int32 AVehicleUnit::RemainingMoves()
 {
-	return maxMovement - currentMovement;
+	return MaxMovement - CurrentMovement;
 }
 
 bool AVehicleUnit::TryMovement()
 {
 	if (CanMove())
 	{
-		currentMovement++;
+		CurrentMovement++;
 		return true;
 	}
 
@@ -109,12 +109,12 @@ bool AVehicleUnit::TryMovement()
 
 void AVehicleUnit::UndoMovement(int32 steps)
 {
-	currentMovement = FMath::Clamp(currentMovement - steps, 0, maxMovement);
+	CurrentMovement = FMath::Clamp(CurrentMovement - steps, 0, MaxMovement);
 }
 
 void AVehicleUnit::SetPlayerOwner(int32 playerId)
 {
-	owner = playerId;
+	Owner = playerId;
 }
 
 void AVehicleUnit::Target()
@@ -127,15 +127,15 @@ void AVehicleUnit::Untarget()
 
 }
 
-void AVehicleUnit::OnTurnBegin(int32 playerId)
+void AVehicleUnit::OnTurnBegin(const int32 playerId)
 {
 
 }
 
-void AVehicleUnit::OnTurnEnd(int32 playerId)
+void AVehicleUnit::OnTurnEnd(const int32 playerId)
 {
-	currentMovement = 0;
+	CurrentMovement = 0;
 	bCanAttack = true;
 }
 
-UPawnMovementComponent* AVehicleUnit::GetMovementComponent() const { return tileMovement; };
+UPawnMovementComponent* AVehicleUnit::GetMovementComponent() const { return TileMovement; };

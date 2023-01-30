@@ -32,6 +32,7 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	class UStrategyMovementComponent* movementComponent;
+	/** Movement component for the character */
+	class UStrategyMovementComponent* MovementComponent;
 };
 

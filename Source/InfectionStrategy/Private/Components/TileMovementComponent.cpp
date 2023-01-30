@@ -49,7 +49,7 @@ void UTileMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		
 }
 
-FVector UTileMovementComponent::CalculateTileDirection(const FVector& direction, float scale) const
+FVector UTileMovementComponent::CalculateTileDirection(const FVector& direction, const float scale) const
 {
 	const ATileActor *targetTile = ATileActor::GetTileUnderLocation(PawnOwner->GetActorLocation() + direction * scale);
 	const ATileActor *currentTile = ATileActor::GetTileUnderLocation(PawnOwner->GetActorLocation());
@@ -60,7 +60,7 @@ FVector UTileMovementComponent::CalculateTileDirection(const FVector& direction,
 		// Ensure that the tiles are neighbors
 		for (int i = 0; i < 4/*restricts looking for current tile in cardinal direction of the target*/; i++)
 		{
-			if (targetTile->neighbors[i] == currentTile)
+			if (targetTile->Neighbors[i] == currentTile)
 			{
 				tileDirection = targetTile->GetActorLocation() - PawnOwner->GetActorLocation();
 				break;

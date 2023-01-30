@@ -6,7 +6,7 @@
 
 int32 UVehicleWidget::GetRemainingMovement()
 {
-	return selectedVehicle ? selectedVehicle->RemainingMoves() : 0;
+	return SelectedVehicle ? SelectedVehicle->RemainingMoves() : 0;
 }
 
 void UVehicleWidget::SendOnMovementSelected()

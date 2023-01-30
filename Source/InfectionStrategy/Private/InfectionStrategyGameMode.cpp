@@ -34,56 +34,56 @@ void AInfectionStrategyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (vehicleTemplate)
+	if (VehicleTemplate)
 	{
 		for (int i = 0; i < 5; i++)
 		{
-			const FVector location = tileSystem->GetLocationAt(i, 0) + FVector(0, 0, 25.0f);
+			const FVector location = TileSystem->GetLocationAtTile(i, 0) + FVector(0, 0, 25.0f);
 			const FRotator rotator = FRotator::ZeroRotator;
 
-			AVehicleUnit* newUnit = (AVehicleUnit*)GetWorld()->SpawnActor<AVehicleUnit>(vehicleTemplate, location, rotator);
+			AVehicleUnit* newUnit = (AVehicleUnit*)GetWorld()->SpawnActor<AVehicleUnit>(VehicleTemplate, location, rotator);
 
 			if (newUnit != nullptr)
 			{
 				newUnit->SetPlayerOwner(0);
-				tileSystem->OccupyTile(i, 0);
+				TileSystem->OccupyTile(i, 0);
 
-				vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
+				Vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
 			}
 		}
 	}
 }
 
-int AInfectionStrategyGameMode::EndTurn()
+int32 AInfectionStrategyGameMode::EndTurn()
 {
 	auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 	
 	if (playerController)
-		playerController->OnTurnEnd(activePlayerId);
+		playerController->OnTurnEnd(ActivePlayerId);
 
-	for (auto& unit : vehicles)
+	for (auto& unit : Vehicles)
 	{
 		if (unit.IsValid())
-			unit->OnTurnEnd(activePlayerId);
+			unit->OnTurnEnd(ActivePlayerId);
 
 	}
 
-	tileSystem->OnTurnEnd(activePlayerId);
+	TileSystem->OnTurnEnd(ActivePlayerId);
 
 	// Next turn begins
-	turnNumber += activePlayerId * 1;
-	activePlayerId = !activePlayerId;
+	TurnNumber += ActivePlayerId * 1;
+	ActivePlayerId = !ActivePlayerId;
 
 	if (playerController)
-		playerController->OnTurnBegin(activePlayerId);
+		playerController->OnTurnBegin(ActivePlayerId);
 
-	for (auto& unit : vehicles)
+	for (auto& unit : Vehicles)
 	{
 		if (unit.IsValid())
-			unit->OnTurnBegin(activePlayerId);
+			unit->OnTurnBegin(ActivePlayerId);
 	}
 
-	tileSystem->OnTurnBegin(activePlayerId);
+	TileSystem->OnTurnBegin(ActivePlayerId);
 
-	return activePlayerId;
+	return ActivePlayerId;
 }

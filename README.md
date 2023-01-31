@@ -1,5 +1,5 @@
 # Infection Strategy - In Progress
-This is a work-in-progress turne-based strategy game project in Unreal Engine 5.0. It is a small project created from the theme of "infectious". I have two goals for the project:
+This is a work-in-progress turn-based strategy game project in Unreal Engine 5.0. It is a small project created from the theme of "infectious". I have two goals for the project:
 * To design and implement gameplay systems in the Unreal Engine and to modify gameplay with feedback
 * To take a deeper dive into Unreal C++ by primarily using C++ to implement features. This includes learning best practices for programming with Unreal.
 ## Overview

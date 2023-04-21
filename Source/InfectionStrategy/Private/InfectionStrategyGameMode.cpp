@@ -36,10 +36,11 @@ void AInfectionStrategyGameMode::BeginPlay()
 
 	if (VehicleTemplate)
 	{
-		for (int i = 0; i < 5; i++)
+		for (int i = 0, j = TileSystem->GridWidth - 1; i < 5; i++, j--)
 		{
-			const FVector location = TileSystem->GetLocationAtTile(i, 0) + FVector(0, 0, 25.0f);
-			const FRotator rotator = FRotator::ZeroRotator;
+			/* Place first players units. */
+			FVector location = TileSystem->GetLocationAtTile(i, 0) + FVector(0, 0, 25.0f);
+			FRotator rotator = FRotator::MakeFromEuler(FVector(0.0f, 0.0f, 180.0f));
 
 			AVehicleUnit* newUnit = (AVehicleUnit*)GetWorld()->SpawnActor<AVehicleUnit>(VehicleTemplate, location, rotator);
 
@@ -47,6 +48,20 @@ void AInfectionStrategyGameMode::BeginPlay()
 			{
 				newUnit->SetPlayerOwner(0);
 				TileSystem->OccupyTile(i, 0);
+
+				Vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
+			}
+
+			/* Place second player's units. */
+			location = TileSystem->GetLocationAtTile(j, TileSystem->GridHeight - 1) + FVector(0, 0, 25.0f);
+			rotator = FRotator::ZeroRotator;
+
+			newUnit = (AVehicleUnit*)GetWorld()->SpawnActor<AVehicleUnit>(VehicleTemplate, location, rotator);
+
+			if (newUnit != nullptr)
+			{
+				newUnit->SetPlayerOwner(1);
+				TileSystem->OccupyTile(j, TileSystem->GridHeight - 1);
 
 				Vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
 			}

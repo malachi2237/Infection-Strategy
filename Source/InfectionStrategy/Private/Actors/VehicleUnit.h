@@ -45,7 +45,7 @@ public:
 	void UndoMovement(int32 steps);
 
 	/** Gets the remaining amount of movement the vehicle can perform this turn. */
-	int32 RemainingMoves();
+	int32 RemainingMoves() const;
 
 	/** Sets which player the vehicle will accept actions from */
 	void SetPlayerOwner(int32 newOwner);

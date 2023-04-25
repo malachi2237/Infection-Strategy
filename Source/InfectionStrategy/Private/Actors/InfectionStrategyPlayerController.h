@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "Containers/Deque.h"
 #include "ITurnBased.h"
@@ -12,8 +11,6 @@
 
 /** Forward declaration to improve compiling times */
 class UNiagaraSystem;
-class UUserWidget;
-class UVehicleWidget;
 class AVehicleUnit;
 class ATileActor;
 
@@ -25,6 +22,9 @@ class AInfectionStrategyPlayerController : public APlayerController, public ITur
 
 public:
 	AInfectionStrategyPlayerController();
+
+	/* TEMPORARY */
+	void AssignID(const int32 id) { playerId = id; }
 
 	virtual void BeginPlay() override;
 
@@ -48,10 +48,15 @@ public:
 	UNiagaraSystem* FXCursor;
 
 protected:
+
+
+
 	// Begin PlayerController interface
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
 	// End PlayerController interface
+
+	void OnPossess(APawn* InPawn) override;
 
 	/** Checks if given movement is possible for the selected unit. If it is, adds it to MovevementQueue.
 	 * @param direction - Direction movement should be attempted
@@ -81,22 +86,6 @@ protected:
 	/** Currently selected vehicle on which to perform actions */
 	UPROPERTY()	
 	AVehicleUnit* SelectedVehicle = nullptr;
-
-	/** Template for the HUD widget */
-	UPROPERTY(EditAnywhere, Category = UI)
-	TSubclassOf<UUserWidget> HudTemplate;
-
-	/** Instance of the HudTemplate */
-	UPROPERTY()
-	UUserWidget* HudInstance;
-
-	/** Template for the HUD displayed when a vehicle is selected */
-	UPROPERTY(EditAnywhere, Category = UI)
-	TSubclassOf<UVehicleWidget> VehicleHudTemplate;
-
-	/** Instance of the VehicleHudTemplate */
-	UPROPERTY()
-	UVehicleWidget* VehicleHudInstance;
 
 private:
 	/** Callback to move the camera vertically on the game world plane.

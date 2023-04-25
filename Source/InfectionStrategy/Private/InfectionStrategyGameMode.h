@@ -26,6 +26,9 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable)
 	int32 EndTurn();
+
+	UFUNCTION()
+	void StartTurn();
 	
 	/** The current UTileSystem in use. */
 	UPROPERTY()

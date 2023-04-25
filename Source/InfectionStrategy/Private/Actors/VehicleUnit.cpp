@@ -91,7 +91,7 @@ bool AVehicleUnit::CanMove()
 	return CurrentMovement < MaxMovement;
 }
 
-int32 AVehicleUnit::RemainingMoves()
+int32 AVehicleUnit::RemainingMoves() const
 {
 	return MaxMovement - CurrentMovement;
 }

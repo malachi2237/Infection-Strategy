@@ -19,11 +19,11 @@ class INFECTIONSTRATEGY_API UVehicleWidget : public UUserWidget
 
 public:
 	/** Sets the vehicle the widget will interact with. */
-	void SetSelectedVehicle(AVehicleUnit* unit) { SelectedVehicle = unit; }
+	void SetSelectedVehicle(const AVehicleUnit* const unit) { SelectedVehicle = unit; }
 
 	/** Returns the amount of tile movement remaining for the selected vehicle. */
 	UFUNCTION(BlueprintCallable)
-	int32 GetRemainingMovement();
+	int32 GetRemainingMovement() const;
 
 	/** Deselect the vehicle and restore the widget to a deselected state */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
@@ -51,7 +51,7 @@ public:
 protected:
 	/** Currently selected vehicle */
 	UPROPERTY()
-	AVehicleUnit* SelectedVehicle;
+	const AVehicleUnit* SelectedVehicle;
 
 	/** Executes OnMovementSelected delegate */
 	UFUNCTION(BlueprintCallable)

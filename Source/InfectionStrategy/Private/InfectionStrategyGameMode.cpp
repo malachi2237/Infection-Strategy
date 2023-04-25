@@ -34,6 +34,9 @@ void AInfectionStrategyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (const UWorld* world = GetWorld())
+		UGameplayStatics::CreatePlayer(world, 1);
+
 	if (VehicleTemplate)
 	{
 		for (int i = 0, j = TileSystem->GridWidth - 1; i < 5; i++, j--)
@@ -67,30 +70,62 @@ void AInfectionStrategyGameMode::BeginPlay()
 			}
 		}
 	}
+
+	if (UWorld* world = GetWorld())
+	{
+		for (int i = 0; i < UGameplayStatics::GetNumLocalPlayerControllers(this); i++)
+		{
+			auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, i));
+
+			if (playerController)
+				playerController->AssignID(i);
+		}
+	}
 }
 
 int32 AInfectionStrategyGameMode::EndTurn()
 {
-	auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	
-	if (playerController)
-		playerController->OnTurnEnd(ActivePlayerId);
+	if (UWorld* world = GetWorld())
+	{
+		for (int i = 0; i < UGameplayStatics::GetNumLocalPlayerControllers(this); i++)
+		{
+			auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, i));
+
+			if (playerController)
+				playerController->OnTurnEnd(ActivePlayerId);
+		}
+	}
 
 	for (auto& unit : Vehicles)
 	{
 		if (unit.IsValid())
 			unit->OnTurnEnd(ActivePlayerId);
-
 	}
 
 	TileSystem->OnTurnEnd(ActivePlayerId);
 
 	// Next turn begins
-	TurnNumber += ActivePlayerId * 1;
-	ActivePlayerId = !ActivePlayerId;
+	ActivePlayerId = (ActivePlayerId + 1) % 2;
 
-	if (playerController)
-		playerController->OnTurnBegin(ActivePlayerId);
+	StartTurn();
+
+	return ActivePlayerId;
+}
+
+void AInfectionStrategyGameMode::StartTurn()
+{
+	TurnNumber += ActivePlayerId * 1;
+
+	if (UWorld* world = GetWorld())
+	{
+		for (int i = 0; i < UGameplayStatics::GetNumLocalPlayerControllers(this); i++)
+		{
+			auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, i));
+
+			if (playerController)
+				playerController->OnTurnBegin(ActivePlayerId);
+		}
+	}
 
 	for (auto& unit : Vehicles)
 	{
@@ -98,7 +133,5 @@ int32 AInfectionStrategyGameMode::EndTurn()
 			unit->OnTurnBegin(ActivePlayerId);
 	}
 
-	TileSystem->OnTurnBegin(ActivePlayerId);
-
-	return ActivePlayerId;
+	TileSystem->OnTurnBegin(ActivePlayerId);	
 }

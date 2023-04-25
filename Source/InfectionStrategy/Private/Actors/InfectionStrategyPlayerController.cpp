@@ -8,12 +8,14 @@
 #include "Engine/GameEngine.h"
 #include "InfectionStrategyCharacter.h"
 #include "Engine/World.h"
-#include "Blueprint/UserWidget.h"
+#include "Widgets/GameplayHUD.h"
 #include "VehicleWidget.h"
 #include "TileSystem.h"
 #include "TileMovementComponent.h"
 #include "VehicleUnit.h"
 #include "TileActor.h"
+
+#include <Kismet/GameplayStatics.h>
 
 #define MAX_UNITS 5
 
@@ -28,34 +30,65 @@ AInfectionStrategyPlayerController::AInfectionStrategyPlayerController()
 
 void AInfectionStrategyPlayerController::BeginPlay()
 {
-	if (HudTemplate)
-		HudInstance = CreateWidget(this, HudTemplate);
+	//if (VehicleHudInstance)
+	//{
+	//	VehicleHudInstance->OnMovementSelected.BindLambda([this] {
+	//		bIsMovingUnit = true; bIsTargeting = false; });
+	//	VehicleHudInstance->OnAttackSelected.BindLambda([this] {
+	//		bIsMovingUnit = false; bIsTargeting = true; });
 
-	HudInstance->AddToViewport();
+	//	VehicleHudInstance->OnDeselect.BindLambda([this]{ SelectUnit(nullptr); });
+	//	VehicleHudInstance->OnMove.BindUObject(this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
+	//}
+}
 
-	if (VehicleHudTemplate)
-		VehicleHudInstance = CreateWidget<UVehicleWidget>(this, VehicleHudTemplate);
+void AInfectionStrategyPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
 
-	if (VehicleHudInstance)
+	/* Setup the hud */
+	if (AGameplayHUD* hud = GetHUD<AGameplayHUD>())
 	{
-		VehicleHudInstance->OnMovementSelected.BindLambda([this] {
-			bIsMovingUnit = true; bIsTargeting = false; });
-		VehicleHudInstance->OnAttackSelected.BindLambda([this] {
-			bIsMovingUnit = false; bIsTargeting = true; });
+		/* If this is player 1, then load the HUD. */
+		if (auto firstPlayerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, 0)))
+		{
+			if (firstPlayerController == this)
+			{
+				hud->AssignPlayer(0);
+				hud->bDisplayOnBeginPlay = true;
+			}
+			else
+				hud->AssignPlayer(1);
+		}
 
-		VehicleHudInstance->OnDeselect.BindLambda([this]{ SelectUnit(nullptr); });
-		VehicleHudInstance->OnMove.BindUObject(this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
+		if (!hud->HasActorBegunPlay())
+			hud->DispatchBeginPlay();
+
+		if (hud->VehicleHudInstance)
+		{
+			hud->VehicleHudInstance->OnMovementSelected.BindLambda([this] {
+				bIsMovingUnit = true; bIsTargeting = false; });
+			hud->VehicleHudInstance->OnAttackSelected.BindLambda([this] {
+				bIsMovingUnit = false; bIsTargeting = true; });
+
+			hud->VehicleHudInstance->OnDeselect.BindLambda([this] { SelectUnit(nullptr); });
+			hud->VehicleHudInstance->OnMove.BindUObject(this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
+		}
 	}
 }
 
 void AInfectionStrategyPlayerController::OnTurnBegin(const int32 player)
 {
-	playerId = player;
+	if (AGameplayHUD* hud = GetHUD<AGameplayHUD>())
+		hud->OnTurnBegin(player);
 }
 
 void AInfectionStrategyPlayerController::OnTurnEnd(const int32 player)
 {
 	SelectUnit(nullptr);
+
+	if (AGameplayHUD* hud = GetHUD<AGameplayHUD>())
+		hud->OnTurnEnd(player);
 }
 
 void AInfectionStrategyPlayerController::ClaimUnit(AVehicleUnit* unit, const int32 ownerId)
@@ -181,10 +214,10 @@ void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
 
 	if (unit && unit->TrySelect(playerId))
 	{
-		if (!VehicleHudInstance->IsInViewport())
-			VehicleHudInstance->AddToViewport();
-
-		VehicleHudInstance->SetSelectedVehicle(unit);
+		if (AGameplayHUD* hud = GetHUD<AGameplayHUD>())
+		{
+			hud->SelectVehicle(unit);
+		}
 		
 		SelectedVehicle = unit;
 		
@@ -192,10 +225,10 @@ void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
 	}
 
 	SelectedVehicle = nullptr;
-	if (VehicleHudInstance)
+
+	if (AGameplayHUD* hud = GetHUD<AGameplayHUD>())
 	{
-		VehicleHudInstance->RemoveFromViewport();
-		VehicleHudInstance->SetSelectedVehicle(SelectedVehicle);
+		hud->DeselectVehicle();
 	}
 }
 

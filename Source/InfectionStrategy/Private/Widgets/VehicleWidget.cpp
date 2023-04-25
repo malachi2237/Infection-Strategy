@@ -4,7 +4,7 @@
 #include "VehicleWidget.h"
 #include "VehicleUnit.h"
 
-int32 UVehicleWidget::GetRemainingMovement()
+int32 UVehicleWidget::GetRemainingMovement() const
 {
 	return SelectedVehicle ? SelectedVehicle->RemainingMoves() : 0;
 }

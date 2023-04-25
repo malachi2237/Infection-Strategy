@@ -21,12 +21,13 @@ public:
 	virtual void BeginPlay() override;
 
 	/**
-	 * Ends the current player's turn for all Actors.
+	 * Ends the current player's turn for all Actors and set the next player as current.
 	 * @return The Id of the player whose turn is next.
 	 */
 	UFUNCTION(BlueprintCallable)
 	int32 EndTurn();
 
+	/** Begins the current player's turn for all Actors. */
 	UFUNCTION()
 	void StartTurn();
 	

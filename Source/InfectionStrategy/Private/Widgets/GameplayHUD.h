@@ -13,7 +13,7 @@ class UVehicleWidget;
 class AVehicleUnit;
 
 /**
- * 
+ * A class which controls the HUD for InfectionStrategy. 
  */
 UCLASS()
 class AGameplayHUD : public AHUD, public ITurnBased
@@ -24,12 +24,19 @@ public:
 	UFUNCTION()
 	virtual void BeginPlay() override;
 
+	/** Assigns the player whose turn this HUD will appear. 
+	 * @param player - The player to assign this HUD.
+	 */
 	UFUNCTION()
 	void AssignPlayer(const int32 player) { OwningPlayerId = player; };
 
+	/** Updates the HUD to display UI to control a vehicle.
+	 * @param vehicle - The vehicle to be controlled
+	 */
 	UFUNCTION()
 	void SelectVehicle(const AVehicleUnit* const vehicle);
 
+	/** Removes vehicle UI from the screen and forgets the last unit selected. */
 	UFUNCTION()
 	void DeselectVehicle();
 
@@ -46,6 +53,7 @@ public:
 	UPROPERTY()
 		UVehicleWidget* VehicleHudInstance;
 
+	/** Should the HUD display on BeginPlay? */
 	bool bDisplayOnBeginPlay = false;
 
 private:
@@ -58,5 +66,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = UI)
 		TSubclassOf<UVehicleWidget> VehicleHudTemplate;
 
+	/** The player that is assigned to this HUD */
 	int32 OwningPlayerId = -1;
 };

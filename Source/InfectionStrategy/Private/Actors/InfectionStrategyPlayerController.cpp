@@ -28,20 +28,6 @@ AInfectionStrategyPlayerController::AInfectionStrategyPlayerController()
 	DefaultMouseCursor = EMouseCursor::Default;
 }
 
-void AInfectionStrategyPlayerController::BeginPlay()
-{
-	//if (VehicleHudInstance)
-	//{
-	//	VehicleHudInstance->OnMovementSelected.BindLambda([this] {
-	//		bIsMovingUnit = true; bIsTargeting = false; });
-	//	VehicleHudInstance->OnAttackSelected.BindLambda([this] {
-	//		bIsMovingUnit = false; bIsTargeting = true; });
-
-	//	VehicleHudInstance->OnDeselect.BindLambda([this]{ SelectUnit(nullptr); });
-	//	VehicleHudInstance->OnMove.BindUObject(this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
-	//}
-}
-
 void AInfectionStrategyPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);

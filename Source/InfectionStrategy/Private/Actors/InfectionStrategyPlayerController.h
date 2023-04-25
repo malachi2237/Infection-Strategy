@@ -23,10 +23,11 @@ class AInfectionStrategyPlayerController : public APlayerController, public ITur
 public:
 	AInfectionStrategyPlayerController();
 
-	/* TEMPORARY */
+	/** Assigns the player an id.
+	 * @param id - The new Id for this player
+	 * @warning This is method is temporary and will be phased out or replaced when PlayerStates are implemented.
+	 */
 	void AssignID(const int32 id) { playerId = id; }
-
-	virtual void BeginPlay() override;
 
 	/** TurnBased Interface */
 	virtual void OnTurnBegin(const int32 player) override;
@@ -48,8 +49,6 @@ public:
 	UNiagaraSystem* FXCursor;
 
 protected:
-
-
 
 	// Begin PlayerController interface
 	virtual void PlayerTick(float DeltaTime) override;

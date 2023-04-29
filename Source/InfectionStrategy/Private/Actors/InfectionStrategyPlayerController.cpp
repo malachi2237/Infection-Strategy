@@ -19,9 +19,6 @@
 
 #define MAX_UNITS 5
 
-DECLARE_DELEGATE_OneParam(FTryTileMovementDelegate, ENeighbor);
-DECLARE_DELEGATE_OneParam(FCameraMovementDelegate, int32);
-
 AInfectionStrategyPlayerController::AInfectionStrategyPlayerController()
 {
 	bShowMouseCursor = true;
@@ -35,18 +32,6 @@ void AInfectionStrategyPlayerController::OnPossess(APawn* InPawn)
 	/* Setup the hud */
 	if (AGameplayHUD* hud = GetHUD<AGameplayHUD>())
 	{
-		/* If this is player 1, then load the HUD. */
-		if (auto firstPlayerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, 0)))
-		{
-			if (firstPlayerController == this)
-			{
-				hud->AssignPlayer(0);
-				hud->bDisplayOnBeginPlay = true;
-			}
-			else
-				hud->AssignPlayer(1);
-		}
-
 		if (!hud->HasActorBegunPlay())
 			hud->DispatchBeginPlay();
 
@@ -96,34 +81,6 @@ void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
 
 		GetPawn()->AddMovementInput(inputVector, 1.f, false);
 	}
-}
-
-void AInfectionStrategyPlayerController::SetupInputComponent()
-{
-	// set up gameplay key bindings
-	Super::SetupInputComponent();
-
-	InputComponent->BindAction("SetDestination", IE_Released, this, &AInfectionStrategyPlayerController::OnSelectUnitReleased);
-
-	InputComponent->BindAction<FTryTileMovementDelegate>("MoveUp", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, ENeighbor::Up);
-	InputComponent->BindAction<FTryTileMovementDelegate>("MoveDown", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, ENeighbor::Down);
-	InputComponent->BindAction<FTryTileMovementDelegate>("MoveLeft", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, ENeighbor::Left);
-	InputComponent->BindAction<FTryTileMovementDelegate>("MoveRight", IE_Released, this, &AInfectionStrategyPlayerController::TryTileMovement, ENeighbor::Right);
-
-	InputComponent->BindAction<FCameraMovementDelegate>("CameraUp", IE_Pressed, this, &AInfectionStrategyPlayerController::OnMoveCameraVerticalPressed, 1);
-	InputComponent->BindAction<FCameraMovementDelegate>("CameraDown", IE_Pressed, this, &AInfectionStrategyPlayerController::OnMoveCameraVerticalPressed, -1);
-	InputComponent->BindAction<FCameraMovementDelegate>("CameraLeft", IE_Pressed, this, &AInfectionStrategyPlayerController::OnMoveCameraHorizontalPressed, -1);
-	InputComponent->BindAction<FCameraMovementDelegate>("CameraRight", IE_Pressed, this, &AInfectionStrategyPlayerController::OnMoveCameraHorizontalPressed, 1);
-
-	InputComponent->BindAction("CameraUp", IE_Released, this, &AInfectionStrategyPlayerController::OnMoveCameraVerticalReleased);
-	InputComponent->BindAction("CameraDown", IE_Released, this, &AInfectionStrategyPlayerController::OnMoveCameraVerticalReleased);
-	InputComponent->BindAction("CameraLeft", IE_Released, this, &AInfectionStrategyPlayerController::OnMoveCameraHorizontalReleased);
-	InputComponent->BindAction("CameraRight", IE_Released, this, &AInfectionStrategyPlayerController::OnMoveCameraHorizontalReleased);
-
-	InputComponent->BindAction("UndoMove", IE_Released, this, &AInfectionStrategyPlayerController::UndoMovement);
-
-	InputComponent->BindAction("Confirm", IE_Released, this, &AInfectionStrategyPlayerController::OnConfirmMoveReleased);
-
 }
 
 void AInfectionStrategyPlayerController::TryTileMovement(ENeighbor direction)

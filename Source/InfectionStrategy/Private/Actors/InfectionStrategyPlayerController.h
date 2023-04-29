@@ -14,7 +14,7 @@ class UNiagaraSystem;
 class AVehicleUnit;
 class ATileActor;
 
-/** PlayerController for InfectionStrategy. */
+/** Base PlayerController for InfectionStrategy. */
 UCLASS()
 class AInfectionStrategyPlayerController : public APlayerController, public ITurnBased
 {
@@ -40,23 +40,6 @@ public:
 	 */
 	void ClaimUnit(AVehicleUnit* unit, const int32 ownerId);
 
-	/** Time Threshold to know if it was a short press */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float ShortPressThreshold;
-
-	/** FX Class that we will spawn when clicking */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UNiagaraSystem* FXCursor;
-
-protected:
-
-	// Begin PlayerController interface
-	virtual void PlayerTick(float DeltaTime) override;
-	virtual void SetupInputComponent() override;
-	// End PlayerController interface
-
-	void OnPossess(APawn* InPawn) override;
-
 	/** Checks if given movement is possible for the selected unit. If it is, adds it to MovevementQueue.
 	 * @param direction - Direction movement should be attempted
 	 */
@@ -79,14 +62,6 @@ protected:
 	/** A callback to perform the movements collected on the currently selected unit. */
 	void OnConfirmMoveReleased();
 
-	/** True if the controlled character should navigate to the mouse cursor. */
-	uint32 bMoveToMouseCursor : 1;
-
-	/** Currently selected vehicle on which to perform actions */
-	UPROPERTY()	
-	AVehicleUnit* SelectedVehicle = nullptr;
-
-private:
 	/** Callback to move the camera vertically on the game world plane.
 	 * @param direction - Indicates positive or negative movement on axis
 	 */
@@ -102,6 +77,30 @@ private:
 
 	/** Callback to stop horizontal camera movement */
 	void OnMoveCameraHorizontalReleased();
+
+	/** Time Threshold to know if it was a short press */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float ShortPressThreshold = 0.3f;
+
+	/** FX Class that we will spawn when clicking */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UNiagaraSystem* FXCursor;
+
+protected:
+
+	// Begin PlayerController interface
+	virtual void PlayerTick(float DeltaTime) override;
+	void OnPossess(APawn* InPawn) override;
+	// End PlayerController interface
+
+	/** True if the controlled character should navigate to the mouse cursor. */
+	uint32 bMoveToMouseCursor : 1;
+
+	/** Currently selected vehicle on which to perform actions */
+	UPROPERTY()	
+	AVehicleUnit* SelectedVehicle = nullptr;
+
+private:
 
 	/** Direction to move the camera vertically */
 	int32 cameraMoveVert = 0;

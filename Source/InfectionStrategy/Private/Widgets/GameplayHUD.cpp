@@ -4,6 +4,7 @@
 #include "Widgets/GameplayHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "VehicleWidget.h"
+#include "PlayerHUDWidget.h"
 
 void AGameplayHUD::BeginPlay()
 {
@@ -13,10 +14,10 @@ void AGameplayHUD::BeginPlay()
 	{
 		/* This block include additional checking to see if BeginPlay has alreaedy been called. 
 			This is because there has been a problem with it being called multiple times. Most likely,
-			This is due to calling "DispatchBeginPlay" in the Controller */
+			this is due to calling "DispatchBeginPlay" in the Controller */
 
 		if (HudTemplate && !HudInstance)
-			HudInstance = CreateWidget(controller, HudTemplate);
+			HudInstance = CreateWidget<UPlayerHUDWidget>(controller, HudTemplate);
 
 		check(HudInstance);
 
@@ -32,6 +33,14 @@ void AGameplayHUD::BeginPlay()
 		}
 	}
 }
+
+void AGameplayHUD::AssignPlayer(const int32 player)
+{
+	OwningPlayerId = player;
+
+	check(HudInstance);
+	HudInstance->SetPlayerDisplayName(FString::FromInt(player + 1));
+};
 
 void AGameplayHUD::SelectVehicle(const AVehicleUnit* const vehicle)
 {

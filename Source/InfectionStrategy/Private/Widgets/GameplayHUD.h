@@ -10,6 +10,7 @@
 
 class UUserWidget;
 class UVehicleWidget;
+class UPlayerHUDWidget;
 class AVehicleUnit;
 
 /**
@@ -28,7 +29,7 @@ public:
 	 * @param player - The player to assign this HUD.
 	 */
 	UFUNCTION()
-	void AssignPlayer(const int32 player) { OwningPlayerId = player; };
+	void AssignPlayer(const int32 player);
 
 	/** Updates the HUD to display UI to control a vehicle.
 	 * @param vehicle - The vehicle to be controlled
@@ -47,7 +48,7 @@ public:
 
 	/** Instance of the HudTemplate */
 	UPROPERTY()
-		UUserWidget* HudInstance;
+		UPlayerHUDWidget* HudInstance;
 
 	/** Instance of the VehicleHudTemplate */
 	UPROPERTY()

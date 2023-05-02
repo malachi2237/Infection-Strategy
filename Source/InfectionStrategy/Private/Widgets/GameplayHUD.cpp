@@ -13,7 +13,7 @@ void AGameplayHUD::BeginPlay()
 	if (controller && controller->GetPawn())
 	{
 		/* This block include additional checking to see if BeginPlay has alreaedy been called. 
-			This is because there has been a problem with it being called multiple times. Most likely,
+			There has been a problem with it being called multiple times. Most likely,
 			this is due to calling "DispatchBeginPlay" in the Controller */
 
 		if (HudTemplate && !HudInstance)

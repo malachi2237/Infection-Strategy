@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "InfectionStrategyPlayerState.generated.h"
 
+class AUnitState;
+
 /**
  * 
  */
@@ -14,4 +16,7 @@ class AInfectionStrategyPlayerState : public APlayerState
 {
 	GENERATED_BODY()
 	
+
+private:
+	TArray<AUnitState*> UnitArray;
 };

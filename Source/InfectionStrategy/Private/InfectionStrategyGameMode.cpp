@@ -13,20 +13,25 @@
 
 AInfectionStrategyGameMode::AInfectionStrategyGameMode()
 {
+}
+void AInfectionStrategyGameMode::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
 
+	if (GetWorld()->IsGameWorld())
+	{
+		TileSystem = GetWorld()->SpawnActor<ATileSystem>(TileSystemClass);
+	}
 }
 
-void AInfectionStrategyGameMode::BeginPlay()
+void AInfectionStrategyGameMode::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 
-	PlayerControllerClass = SecondPlayerControllerClass;
-
-	if (const UWorld* world = GetWorld())
-		UGameplayStatics::CreatePlayer(world, 1);
-
-	if (VehicleTemplate)
+	if (GetWorld()->IsGameWorld() && VehicleTemplate)
 	{
+		//TileSystem = GetWorld()->SpawnActor<ATileSystem>(ATileSystem::StaticClass());
+
 		for (int i = 0, j = TileSystem->GridWidth - 1; i < 5; i++, j--)
 		{
 			/* Place first players units. */
@@ -58,6 +63,17 @@ void AInfectionStrategyGameMode::BeginPlay()
 			}
 		}
 	}
+}
+
+void AInfectionStrategyGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	PlayerControllerClass = SecondPlayerControllerClass;
+
+	if (const UWorld* world = GetWorld())
+		UGameplayStatics::CreatePlayer(world, 1);
+
 
 	if (UWorld* world = GetWorld())
 	{

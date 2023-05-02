@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "InfectionStrategyGameMode.generated.h"
 
-class UTileSystem;
+class ATileSystem;
 class AVehicleUnit;
 class ASecondaryLocalController;
 
@@ -36,14 +36,24 @@ public:
 	UFUNCTION()
 	void StartTurn();
 
+
+
+	/** The current ATileSystem in use. */
+	UPROPERTY()
+	ATileSystem* TileSystem = nullptr;
+
+
+protected:
+	virtual void PreInitializeComponents() override;
+
+	virtual void PostInitializeComponents() override;
+
 	/** The player controller class that should be used for any additional local players */
-	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = Classes)
+	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = InfectionStrategyClasses)
 	TSubclassOf<ASecondaryLocalController> SecondPlayerControllerClass;
 
-	/** The current UTileSystem in use. */
-	UPROPERTY()
-	UTileSystem* TileSystem = nullptr;
-
+	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = InfectionStrategyClasses)
+	TSubclassOf<ATileSystem> TileSystemClass;
 private:
 	/** Player whose turn it currently is */
 	int32 ActivePlayerId = 0;

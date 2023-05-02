@@ -48,11 +48,11 @@ public:
 
 	/** Instance of the HudTemplate */
 	UPROPERTY()
-		UPlayerHUDWidget* HudInstance;
+	UPlayerHUDWidget* HudInstance;
 
 	/** Instance of the VehicleHudTemplate */
 	UPROPERTY()
-		UVehicleWidget* VehicleHudInstance;
+	UVehicleWidget* VehicleHudInstance;
 
 	/** Should the HUD display on BeginPlay? */
 	bool bDisplayOnBeginPlay = false;
@@ -61,11 +61,11 @@ private:
 
 	/** Template for the HUD widget */
 	UPROPERTY(EditAnywhere, Category = UI)
-		TSubclassOf<UUserWidget> HudTemplate;
+	TSubclassOf<UUserWidget> HudTemplate;
 
 	/** Template for the HUD displayed when a vehicle is selected */
 	UPROPERTY(EditAnywhere, Category = UI)
-		TSubclassOf<UVehicleWidget> VehicleHudTemplate;
+	TSubclassOf<UVehicleWidget> VehicleHudTemplate;
 
 	/** The player that is assigned to this HUD */
 	int32 OwningPlayerId = -1;

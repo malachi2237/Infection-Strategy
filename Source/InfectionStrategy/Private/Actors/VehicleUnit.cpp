@@ -3,6 +3,8 @@
 #include "VehicleUnit.h"
 
 #include "TileActor.h"
+#include "UnitState.h"
+
 #include "SelectionStateComponent.h"
 #include "TileMovementComponent.h"
 
@@ -32,6 +34,25 @@ AVehicleUnit::AVehicleUnit()
 
 	SelectionState = CreateDefaultSubobject<USelectionStateComponent>(TEXT("Selection State"));
 	TileMovement = CreateDefaultSubobject<UTileMovementComponent>(TEXT("MovementComponent"));
+}
+
+void AVehicleUnit::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (GetWorld()->IsGameWorld())
+	{
+		if (AUnitState* state = (AUnitState*)GetWorld()->SpawnActor(AUnitState::StaticClass()))
+		{
+			check(Owner >= 0);
+
+			UnitState = state;
+
+			bool result = UnitState->RegisterUnit(*this, Owner);
+
+			check(result);
+		}
+	}
 }
 
 // Called when the game starts or when spawned

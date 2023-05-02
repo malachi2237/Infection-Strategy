@@ -9,8 +9,11 @@
 #include "VehicleUnit.generated.h"
 
 class ATileActor;
+class AUnitState;
+
 class USelectionStateComponent;
 class UTileMovementComponent;
+
 /** Base class for vehicles to be used as selectable units */
 UCLASS()
 class INFECTIONSTRATEGY_API AVehicleUnit : public APawn, public ITargetable, public ITurnBased
@@ -47,6 +50,9 @@ public:
 	/** Gets the remaining amount of movement the vehicle can perform this turn. */
 	int32 RemainingMoves() const;
 
+	/** Returns the health of the unit when it was spawned. */
+	int32 GetMaxHealth() const { return Health; }
+
 	/** Sets which player the vehicle will accept actions from */
 	void SetPlayerOwner(int32 newOwner);
 
@@ -70,8 +76,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	virtual void PostInitializeComponents() override;
+
 	/** The Id of the player this vehicle accepts commands from */
-	int32 Owner = 0;
+	int32 Owner = -1;
 
 	/** Remaining health of the vehicle */
 	UPROPERTY(EditAnywhere)
@@ -97,7 +105,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int32 MaxMovement = 10;
 
-	/** Number of tiles moved this turn */
+//** Number of tiles moved this turn */
 	int32 CurrentMovement = 0;
 
 	/** Is the vehicle able to attack this turn? */
@@ -132,4 +140,7 @@ protected:
 
 	/** Checks if the vehicle can still move this turn */
 	bool CanMove();
+
+private:
+AUnitState* UnitState;
 };

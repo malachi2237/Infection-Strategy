@@ -5,21 +5,21 @@
 #include "CoreMinimal.h"
 #include "ITurnBased.h"
 #include "Neighbor.h"
-#include "Components/ActorComponent.h"
+#include "GameFramework/Actor.h"
 #include "TileSystem.generated.h"
 
 class ATileActor;
 
 
 /** Instantiates and maintains the tile grid. Also provides methods of interacting with tiles in the system. */
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class INFECTIONSTRATEGY_API UTileSystem : public UActorComponent, public ITurnBased
+UCLASS(notplaceable)
+class INFECTIONSTRATEGY_API ATileSystem : public AActor, public ITurnBased
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UTileSystem();
+	ATileSystem();
 
 	/** Sets the tile at a certain point on the grid as occupied.
 	 * @param x - X coordinate of target tile
@@ -51,17 +51,20 @@ public:
 
 	/** Height of the tile grid */
 	UPROPERTY(EditInstanceOnly)
-	uint8 GridHeight;
+	uint8 GridHeight = 25;
 
 	/* Width of the tile grid */
 	UPROPERTY(EditInstanceOnly)
-	uint8 GridWidth;
+	uint8 GridWidth = 25;
 
 	/* Width of the tiles used by the system, in cm */
 	UPROPERTY(EditInstanceOnly)
-	float TileWidth;
+	float TileWidth = 100.0f;
 
 protected:
+	virtual void PreInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 

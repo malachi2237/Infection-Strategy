@@ -5,7 +5,7 @@
 #include "Widgets/GameplayHUD.h"
 
 /* Should be able to get rid of at least the gamemode reference eventually. */
-#include "InfectionStrategyGameMode.h"
+#include "InfectionStrategyGameState.h"
 #include "Kismet/GameplayStatics.h"
 
 DECLARE_DELEGATE_OneParam(FTryTileMovementDelegate, ENeighbor);
@@ -39,6 +39,13 @@ void APrimaryPlayerController::SetupInputComponent()
 
 }
 
+void APrimaryPlayerController::OnMatchEnd(const int32 winnerId)
+{
+	Super::OnMatchEnd(winnerId);
+
+	/* *** Do something with input. ***  Need to be able to click on Widget but nothing else. */
+}
+
 void APrimaryPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -53,9 +60,9 @@ AInfectionStrategyPlayerController* APrimaryPlayerController::GetCurrentPlayerCo
 {
 	AInfectionStrategyPlayerController* pc = nullptr;
 
-	if (AInfectionStrategyGameMode* mode = Cast<AInfectionStrategyGameMode>(GetWorld()->GetAuthGameMode()))
+	if (AInfectionStrategyGameState* gState = Cast<AInfectionStrategyGameState>(GetWorld()->GetGameState()))
 	{
-		pc = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, mode->GetActivePlayerId()));
+		pc = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, gState->GetActivePlayerId()));
 	}	
 
 	check(pc);

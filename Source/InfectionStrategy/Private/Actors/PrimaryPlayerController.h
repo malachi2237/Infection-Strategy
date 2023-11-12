@@ -23,6 +23,8 @@ protected:
 
 private:
 
+	virtual void OnMatchEnd(const int32 winnerId) override;
+
 	/** Retrieves a pointer to the player whose turn it is. */
 	AInfectionStrategyPlayerController* GetCurrentPlayerController() const;
 

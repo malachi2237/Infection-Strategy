@@ -25,6 +25,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	int32 GetRemainingMovement() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool GetCanAttack() const;
+
 	/** Deselect the vehicle and restore the widget to a deselected state */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Deselect();

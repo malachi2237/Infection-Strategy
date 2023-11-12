@@ -24,8 +24,11 @@ public:
 	// Sets default values for this actor's properties
 	AVehicleUnit();
 	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	/* Pawn Interface */
+	virtual bool ShouldTakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
+	/* End Pawn interface */
 
 	/** Attempts to select the vehicle for action.
 	 * @param playerId - Id of the player attempting selection
@@ -50,13 +53,16 @@ public:
 	/** Gets the remaining amount of movement the vehicle can perform this turn. */
 	int32 RemainingMoves() const;
 
+	bool CanAttack() const;
+
 	/** Returns the health of the unit when it was spawned. */
 	int32 GetMaxHealth() const { return Health; }
 
-	/** Sets which player the vehicle will accept actions from */
-	void SetPlayerOwner(int32 newOwner);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDamageTaken();
 
-	virtual UPawnMovementComponent* GetMovementComponent() const override;
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDeath();
 
 	/* Targetable interface */
 	void Target() override;
@@ -66,20 +72,20 @@ public:
 	/* TurnBased interface*/
 	virtual void OnTurnBegin(const int32 playerId) override;
 	virtual void OnTurnEnd(const int32 playerId) override;
+	virtual void OnMatchEnd(const int32 winnerId) override {};
 	/* End TurnBased interface */
 
 	/** The tile on which the vehicle is currently located */
 	UPROPERTY()
 	ATileActor* Tile;
 
+	UPROPERTY()
+	AUnitState* UnitState;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
 	virtual void PostInitializeComponents() override;
-
-	/** The Id of the player this vehicle accepts commands from */
-	int32 Owner = -1;
 
 	/** Remaining health of the vehicle */
 	UPROPERTY(EditAnywhere)
@@ -139,8 +145,9 @@ protected:
 	void OnSelection();
 
 	/** Checks if the vehicle can still move this turn */
-	bool CanMove();
+	bool CanMove() const;
+	
 
 private:
-AUnitState* UnitState;
+
 };

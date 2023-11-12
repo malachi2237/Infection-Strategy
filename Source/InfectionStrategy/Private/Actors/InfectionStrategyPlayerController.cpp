@@ -1,14 +1,19 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "InfectionStrategyPlayerController.h"
+
 #include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerState.h"
+
+#include "Engine/GameEngine.h"
+#include "Engine/World.h"
+
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "NiagaraSystem.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Engine/GameEngine.h"
-#include "InfectionStrategyCharacter.h"
-#include "Engine/World.h"
 #include "Widgets/GameplayHUD.h"
+
+#include "InfectionStrategyCharacter.h"
 #include "VehicleWidget.h"
 #include "TileSystem.h"
 #include "TileMovementComponent.h"
@@ -62,13 +67,10 @@ void AInfectionStrategyPlayerController::OnTurnEnd(const int32 player)
 		hud->OnTurnEnd(player);
 }
 
-void AInfectionStrategyPlayerController::ClaimUnit(AVehicleUnit* unit, const int32 ownerId)
+void AInfectionStrategyPlayerController::OnMatchEnd(const int32 winnerId)
 {
-	unit->SetPlayerOwner(ownerId);
-	if (auto tileMoveComp = Cast<UTileMovementComponent>(unit->GetMovementComponent()))
-	{
-		//tileMoveComp->OnMovementComplete.Add()
-	}
+	if (AGameplayHUD* hud = GetHUD<AGameplayHUD>())
+		hud->OnMatchEnd(winnerId);
 }
 
 void AInfectionStrategyPlayerController::PlayerTick(float DeltaTime)
@@ -155,7 +157,7 @@ void AInfectionStrategyPlayerController::SelectUnit(AVehicleUnit *unit)
 	bIsMovingUnit = false;
 	bIsTargeting = false;
 
-	if (unit && unit->TrySelect(playerId))
+	if (unit && unit->TrySelect(PlayerState->GetPlayerId()))
 	{
 		if (AGameplayHUD* hud = GetHUD<AGameplayHUD>())
 		{

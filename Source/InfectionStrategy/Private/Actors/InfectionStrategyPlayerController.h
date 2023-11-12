@@ -15,7 +15,7 @@ class AVehicleUnit;
 class ATileActor;
 
 /** Base PlayerController for InfectionStrategy. */
-UCLASS()
+UCLASS(Abstract)
 class AInfectionStrategyPlayerController : public APlayerController, public ITurnBased
 {
 	GENERATED_BODY()
@@ -23,15 +23,10 @@ class AInfectionStrategyPlayerController : public APlayerController, public ITur
 public:
 	AInfectionStrategyPlayerController();
 
-	/** Assigns the player an id.
-	 * @param id - The new Id for this player
-	 * @warning This is method is temporary and will be phased out or replaced when PlayerStates are implemented.
-	 */
-	void AssignID(const int32 id) { playerId = id; }
-
 	/** TurnBased Interface */
 	virtual void OnTurnBegin(const int32 player) override;
 	virtual void OnTurnEnd(const int32 player) override;
+	virtual void OnMatchEnd(const int32 winnerId) override;
 	/** End TurnBased Interface */
 
 	/** Sets ownership of vehicle and performs some setup on it.
@@ -113,9 +108,6 @@ private:
 
 	/** Are we in the state of targetting with a unit? */
 	bool bIsTargeting = false;
-
-	/** ID of the currently active player */
-	int32 playerId = 0;
 
 	/** Queue of movements to be performed by selected unit when moves confirmed */
 	TDeque<ATileActor*> MovementQueue;

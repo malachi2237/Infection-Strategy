@@ -12,7 +12,7 @@ void AGameplayHUD::BeginPlay()
 
 	if (controller && controller->GetPawn())
 	{
-		/* This block include additional checking to see if BeginPlay has alreaedy been called. 
+		/* This block includes additional checking to see if BeginPlay has already been called. 
 			There has been a problem with it being called multiple times. Most likely,
 			this is due to calling "DispatchBeginPlay" in the Controller */
 
@@ -25,6 +25,11 @@ void AGameplayHUD::BeginPlay()
 			VehicleHudInstance = CreateWidget<UVehicleWidget>(controller, VehicleHudTemplate);
 
 		check(VehicleHudInstance);
+
+		if (GameOverTemplate && !GameOverInstance)
+			GameOverInstance = CreateWidget<UUserWidget>(controller, GameOverTemplate);
+
+		check(GameOverInstance);
 
 		if (bDisplayOnBeginPlay)
 		{
@@ -67,4 +72,13 @@ void AGameplayHUD::OnTurnEnd(const int32 player)
 	HudInstance->RemoveFromViewport();
 
 	DeselectVehicle();
+}
+
+void AGameplayHUD::OnMatchEnd(const int32 winnerId)
+{
+	DeselectVehicle();
+	HudInstance->RemoveFromViewport();
+
+	if (winnerId == OwningPlayerId)
+		GameOverInstance->AddToViewport();
 }

@@ -9,6 +9,11 @@ int32 UVehicleWidget::GetRemainingMovement() const
 	return SelectedVehicle ? SelectedVehicle->RemainingMoves() : 0;
 }
 
+bool UVehicleWidget::GetCanAttack() const
+{
+	return SelectedVehicle && SelectedVehicle->CanAttack();
+}
+
 void UVehicleWidget::SendOnMovementSelected()
 {
 	OnMovementSelected.ExecuteIfBound();

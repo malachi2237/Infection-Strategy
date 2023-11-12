@@ -44,13 +44,8 @@ void AVehicleUnit::PostInitializeComponents()
 	{
 		if (AUnitState* state = (AUnitState*)GetWorld()->SpawnActor(AUnitState::StaticClass()))
 		{
-			check(Owner >= 0);
-
 			UnitState = state;
-
-			bool result = UnitState->RegisterUnit(*this, Owner);
-
-			check(result);
+			UnitState->SetVehicleOwner(*this);
 		}
 	}
 }
@@ -73,11 +68,21 @@ void AVehicleUnit::BeginPlay()
 	TileMovement->OnMovementComplete.AddDynamic(this, &AVehicleUnit::OnMovementComplete);
 }
 
-// Called every frame
-void AVehicleUnit::Tick(float DeltaTime)
+bool AVehicleUnit::ShouldTakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const
 {
-	Super::Tick(DeltaTime);
-	/*MoveTo*/
+	//Super::ShouldTakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	return true;
+}
+
+float AVehicleUnit::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	if (!ShouldTakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser))
+		return 0.0f;
+
+	UnitState->RemoveHealth(DamageAmount);
+
+	return DamageAmount;
 }
 
 void AVehicleUnit::OnMovementComplete()
@@ -93,7 +98,7 @@ void AVehicleUnit::OnSelection()
 
 bool AVehicleUnit::TrySelect(int32 playerId)
 {
-	if ((playerId == Owner) && (CanMove() || bCanAttack))
+	if ((playerId == UnitState->OwningPlayer) && (CanMove() || bCanAttack))
 	{
 		SelectionState->SelectForMovement();
 		return true;
@@ -107,9 +112,14 @@ void AVehicleUnit::Deselect()
 	SelectionState->SelectDefaultState();
 }
 
-bool AVehicleUnit::CanMove()
+bool AVehicleUnit::CanMove() const
 {
 	return CurrentMovement < MaxMovement;
+}
+
+bool AVehicleUnit::CanAttack() const
+{
+	return bCanAttack;
 }
 
 int32 AVehicleUnit::RemainingMoves() const
@@ -131,11 +141,6 @@ bool AVehicleUnit::TryMovement()
 void AVehicleUnit::UndoMovement(int32 steps)
 {
 	CurrentMovement = FMath::Clamp(CurrentMovement - steps, 0, MaxMovement);
-}
-
-void AVehicleUnit::SetPlayerOwner(int32 playerId)
-{
-	Owner = playerId;
 }
 
 void AVehicleUnit::Target()

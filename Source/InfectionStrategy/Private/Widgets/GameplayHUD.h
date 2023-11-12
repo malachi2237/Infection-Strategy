@@ -44,6 +44,7 @@ public:
 	/** TurnBased Interface */
 	virtual void OnTurnBegin(const int32 player) override;
 	virtual void OnTurnEnd(const int32 player) override;
+	virtual void OnMatchEnd(const int32 winnerId) override;
 	/** End TurnBased Interface */
 
 	/** Instance of the HudTemplate */
@@ -54,6 +55,10 @@ public:
 	UPROPERTY()
 	UVehicleWidget* VehicleHudInstance;
 
+	/** Instance of the GameOverTemplate */
+	UPROPERTY()
+	UUserWidget* GameOverInstance;
+
 	/** Should the HUD display on BeginPlay? */
 	bool bDisplayOnBeginPlay = false;
 
@@ -61,11 +66,15 @@ private:
 
 	/** Template for the HUD widget */
 	UPROPERTY(EditAnywhere, Category = UI)
-	TSubclassOf<UUserWidget> HudTemplate;
+	TSubclassOf<UPlayerHUDWidget> HudTemplate;
 
 	/** Template for the HUD displayed when a vehicle is selected */
 	UPROPERTY(EditAnywhere, Category = UI)
 	TSubclassOf<UVehicleWidget> VehicleHudTemplate;
+
+	/** Template for the GameOver widget */
+	UPROPERTY(EditAnywhere, Category = UI)
+	TSubclassOf<UUserWidget> GameOverTemplate;
 
 	/** The player that is assigned to this HUD */
 	int32 OwningPlayerId = -1;

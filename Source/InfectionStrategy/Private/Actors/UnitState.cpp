@@ -12,6 +12,21 @@ AUnitState::AUnitState()
 
 }
 
+void AUnitState::OnTurnBegin(const int32 playerId)
+{
+
+}
+
+void AUnitState::OnTurnEnd(const int32 playerId)
+{
+
+}
+
+void AUnitState::OnMatchEnd(const int32 winnerId)
+{
+
+}
+
 // Called when the game starts or when spawned
 void AUnitState::BeginPlay()
 {
@@ -26,12 +41,22 @@ void AUnitState::PostInitializeComponents()
 
 }
 
-bool AUnitState::RegisterUnit(AVehicleUnit& unit, const int32 ownerPlayer)
+bool AUnitState::SetPlayerOwner(const int32 playerId)
+{
+	if (playerId >= 0)
+	{
+		OwningPlayer = playerId;
+		return true;
+	}
+	
+	return false;
+}
+
+bool AUnitState::SetVehicleOwner(AVehicleUnit& unit)
 {
 	if (!OwningUnit)
 	{
 		OwningUnit = &unit;
-		OwningPlayer = ownerPlayer;
 
 		MaxHealth = OwningUnit->GetMaxHealth();
 		CurrentHealth = MaxHealth;
@@ -46,5 +71,27 @@ bool AUnitState::RegisterUnit(AVehicleUnit& unit, const int32 ownerPlayer)
 	}
 
 	return false;
+}
+
+void AUnitState::AddHealth(int32 health)
+{
+	CurrentHealth += health;
+
+	if (CurrentHealth > MaxHealth)
+		CurrentHealth = MaxHealth;
+}
+
+void AUnitState::RemoveHealth(int32 health)
+{
+	CurrentHealth -= health;
+
+	if (CurrentHealth <= 0)
+	{
+		OwningUnit->OnDeath();
+
+		OnUnitDied.ExecuteIfBound(OwningPlayer);
+	}
+	else
+		OwningUnit->OnDamageTaken();
 }
 

@@ -4,65 +4,44 @@
 #include "Blueprint/UserWidget.h"
 #include "InfectionStrategyPlayerController.h"
 #include "InfectionStrategyCharacter.h"
-#include "UObject/ConstructorHelpers.h"
-#include "TileActor.h"
 #include "TileSystem.h"
+#include "UObject/ConstructorHelpers.h"
 #include "VehicleUnit.h"
+#include "TileActor.h"
+
+
 #include <Kismet/GameplayStatics.h>
-#include "Actors/SecondaryLocalController.h"
+
+#include "InfectionStrategyGameState.h"
 
 AInfectionStrategyGameMode::AInfectionStrategyGameMode()
 {
+
 }
+
+
 void AInfectionStrategyGameMode::PreInitializeComponents()
 {
 	Super::PreInitializeComponents();
 
-	if (GetWorld()->IsGameWorld())
-	{
-		TileSystem = GetWorld()->SpawnActor<ATileSystem>(TileSystemClass);
-	}
+
 }
 
 void AInfectionStrategyGameMode::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-
-	if (GetWorld()->IsGameWorld() && VehicleTemplate)
+	if (GetWorld()->IsGameWorld())
 	{
-		//TileSystem = GetWorld()->SpawnActor<ATileSystem>(ATileSystem::StaticClass());
-
-		for (int i = 0, j = TileSystem->GridWidth - 1; i < 5; i++, j--)
+		if (auto gs = Cast<AInfectionStrategyGameState>(GameState))
 		{
-			/* Place first players units. */
-			FVector location = TileSystem->GetLocationAtTile(i, 0) + FVector(0, 0, 25.0f);
-			FRotator rotator = FRotator::MakeFromEuler(FVector(0.0f, 0.0f, 180.0f));
-
-			AVehicleUnit* newUnit = (AVehicleUnit*)GetWorld()->SpawnActor<AVehicleUnit>(VehicleTemplate, location, rotator);
-
-			if (newUnit != nullptr)
-			{
-				newUnit->SetPlayerOwner(0);
-				TileSystem->OccupyTile(i, 0);
-
-				Vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
-			}
-
-			/* Place second player's units. */
-			location = TileSystem->GetLocationAtTile(j, TileSystem->GridHeight - 1) + FVector(0, 0, 25.0f);
-			rotator = FRotator::ZeroRotator;
-
-			newUnit = (AVehicleUnit*)GetWorld()->SpawnActor<AVehicleUnit>(VehicleTemplate, location, rotator);
-
-			if (newUnit != nullptr)
-			{
-				newUnit->SetPlayerOwner(1);
-				TileSystem->OccupyTile(j, TileSystem->GridHeight - 1);
-
-				Vehicles.Add(TWeakObjectPtr<AVehicleUnit>(newUnit));
-			}
+			gs->OnScoreChanged.BindUObject(this, &AInfectionStrategyGameMode::CheckScoreForWinner);
+			if (TileSystemClass)
+				gs->TileSystemClass = TileSystemClass;
+			if (VehicleTemplate)
+				gs->VehicleTemplate = VehicleTemplate;
 		}
 	}
+
 }
 
 void AInfectionStrategyGameMode::BeginPlay()
@@ -73,69 +52,15 @@ void AInfectionStrategyGameMode::BeginPlay()
 
 	if (const UWorld* world = GetWorld())
 		UGameplayStatics::CreatePlayer(world, 1);
-
-
-	if (UWorld* world = GetWorld())
-	{
-		for (int i = 0; i < UGameplayStatics::GetNumLocalPlayerControllers(this); i++)
-		{
-			auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, i));
-
-			if (playerController)
-				playerController->AssignID(i);
-		}
-	}
 }
 
-int32 AInfectionStrategyGameMode::EndTurn()
+
+
+void AInfectionStrategyGameMode::CheckScoreForWinner(const int32 playerOneScore, const int32 playerTwoScore)
 {
-	if (UWorld* world = GetWorld())
-	{
-		for (int i = 0; i < UGameplayStatics::GetNumLocalPlayerControllers(this); i++)
-		{
-			auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, i));
-
-			if (playerController)
-				playerController->OnTurnEnd(ActivePlayerId);
-		}
-	}
-
-	for (auto& unit : Vehicles)
-	{
-		if (unit.IsValid())
-			unit->OnTurnEnd(ActivePlayerId);
-	}
-
-	TileSystem->OnTurnEnd(ActivePlayerId);
-
-	// Next turn begins
-	ActivePlayerId = (ActivePlayerId + 1) % 2;
-
-	StartTurn();
-
-	return ActivePlayerId;
+	//if (playerOneScore <= 0)
+	//	EndMatch(1);
+	//else if (playerTwoScore <= 0)
+	//	EndMatch(0);
 }
 
-void AInfectionStrategyGameMode::StartTurn()
-{
-	TurnNumber += ActivePlayerId * 1;
-
-	if (UWorld* world = GetWorld())
-	{
-		for (int i = 0; i < UGameplayStatics::GetNumLocalPlayerControllers(this); i++)
-		{
-			auto playerController = Cast<AInfectionStrategyPlayerController>(UGameplayStatics::GetPlayerController(this, i));
-
-			if (playerController)
-				playerController->OnTurnBegin(ActivePlayerId);
-		}
-	}
-
-	for (auto& unit : Vehicles)
-	{
-		if (unit.IsValid())
-			unit->OnTurnBegin(ActivePlayerId);
-	}
-
-	TileSystem->OnTurnBegin(ActivePlayerId);	
-}

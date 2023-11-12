@@ -9,8 +9,11 @@
 #include "VehicleUnit.generated.h"
 
 class ATileActor;
+class AUnitState;
+
 class USelectionStateComponent;
 class UTileMovementComponent;
+
 /** Base class for vehicles to be used as selectable units */
 UCLASS()
 class INFECTIONSTRATEGY_API AVehicleUnit : public APawn, public ITargetable, public ITurnBased
@@ -21,8 +24,11 @@ public:
 	// Sets default values for this actor's properties
 	AVehicleUnit();
 	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	/* Pawn Interface */
+	virtual bool ShouldTakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) const override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
+	/* End Pawn interface */
 
 	/** Attempts to select the vehicle for action.
 	 * @param playerId - Id of the player attempting selection
@@ -45,12 +51,18 @@ public:
 	void UndoMovement(int32 steps);
 
 	/** Gets the remaining amount of movement the vehicle can perform this turn. */
-	int32 RemainingMoves();
+	int32 RemainingMoves() const;
 
-	/** Sets which player the vehicle will accept actions from */
-	void SetPlayerOwner(int32 newOwner);
+	bool CanAttack() const;
 
-	virtual UPawnMovementComponent* GetMovementComponent() const override;
+	/** Returns the health of the unit when it was spawned. */
+	int32 GetMaxHealth() const { return Health; }
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDamageTaken();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDeath();
 
 	/* Targetable interface */
 	void Target() override;
@@ -60,18 +72,20 @@ public:
 	/* TurnBased interface*/
 	virtual void OnTurnBegin(const int32 playerId) override;
 	virtual void OnTurnEnd(const int32 playerId) override;
+	virtual void OnMatchEnd(const int32 winnerId) override {};
 	/* End TurnBased interface */
 
 	/** The tile on which the vehicle is currently located */
 	UPROPERTY()
 	ATileActor* Tile;
 
+	UPROPERTY()
+	AUnitState* UnitState;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	/** The Id of the player this vehicle accepts commands from */
-	int32 Owner = 0;
+	virtual void PostInitializeComponents() override;
 
 	/** Remaining health of the vehicle */
 	UPROPERTY(EditAnywhere)
@@ -97,7 +111,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int32 MaxMovement = 10;
 
-	/** Number of tiles moved this turn */
+	//** Number of tiles moved this turn */
 	int32 CurrentMovement = 0;
 
 	/** Is the vehicle able to attack this turn? */
@@ -131,5 +145,9 @@ protected:
 	void OnSelection();
 
 	/** Checks if the vehicle can still move this turn */
-	bool CanMove();
+	bool CanMove() const;
+	
+
+private:
+
 };

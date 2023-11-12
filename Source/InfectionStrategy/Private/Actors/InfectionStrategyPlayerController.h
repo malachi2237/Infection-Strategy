@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "Containers/Deque.h"
 #include "ITurnBased.h"
@@ -12,13 +11,11 @@
 
 /** Forward declaration to improve compiling times */
 class UNiagaraSystem;
-class UUserWidget;
-class UVehicleWidget;
 class AVehicleUnit;
 class ATileActor;
 
-/** PlayerController for InfectionStrategy. */
-UCLASS()
+/** Base PlayerController for InfectionStrategy. */
+UCLASS(Abstract)
 class AInfectionStrategyPlayerController : public APlayerController, public ITurnBased
 {
 	GENERATED_BODY()
@@ -26,11 +23,10 @@ class AInfectionStrategyPlayerController : public APlayerController, public ITur
 public:
 	AInfectionStrategyPlayerController();
 
-	virtual void BeginPlay() override;
-
 	/** TurnBased Interface */
 	virtual void OnTurnBegin(const int32 player) override;
 	virtual void OnTurnEnd(const int32 player) override;
+	virtual void OnMatchEnd(const int32 winnerId) override;
 	/** End TurnBased Interface */
 
 	/** Sets ownership of vehicle and performs some setup on it.
@@ -38,20 +34,6 @@ public:
 	 * @param ownerId - Id of the player the vehicle is assigned to
 	 */
 	void ClaimUnit(AVehicleUnit* unit, const int32 ownerId);
-
-	/** Time Threshold to know if it was a short press */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float ShortPressThreshold;
-
-	/** FX Class that we will spawn when clicking */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UNiagaraSystem* FXCursor;
-
-protected:
-	// Begin PlayerController interface
-	virtual void PlayerTick(float DeltaTime) override;
-	virtual void SetupInputComponent() override;
-	// End PlayerController interface
 
 	/** Checks if given movement is possible for the selected unit. If it is, adds it to MovevementQueue.
 	 * @param direction - Direction movement should be attempted
@@ -75,30 +57,6 @@ protected:
 	/** A callback to perform the movements collected on the currently selected unit. */
 	void OnConfirmMoveReleased();
 
-	/** True if the controlled character should navigate to the mouse cursor. */
-	uint32 bMoveToMouseCursor : 1;
-
-	/** Currently selected vehicle on which to perform actions */
-	UPROPERTY()	
-	AVehicleUnit* SelectedVehicle = nullptr;
-
-	/** Template for the HUD widget */
-	UPROPERTY(EditAnywhere, Category = UI)
-	TSubclassOf<UUserWidget> HudTemplate;
-
-	/** Instance of the HudTemplate */
-	UPROPERTY()
-	UUserWidget* HudInstance;
-
-	/** Template for the HUD displayed when a vehicle is selected */
-	UPROPERTY(EditAnywhere, Category = UI)
-	TSubclassOf<UVehicleWidget> VehicleHudTemplate;
-
-	/** Instance of the VehicleHudTemplate */
-	UPROPERTY()
-	UVehicleWidget* VehicleHudInstance;
-
-private:
 	/** Callback to move the camera vertically on the game world plane.
 	 * @param direction - Indicates positive or negative movement on axis
 	 */
@@ -115,6 +73,30 @@ private:
 	/** Callback to stop horizontal camera movement */
 	void OnMoveCameraHorizontalReleased();
 
+	/** Time Threshold to know if it was a short press */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float ShortPressThreshold = 0.3f;
+
+	/** FX Class that we will spawn when clicking */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UNiagaraSystem* FXCursor;
+
+protected:
+
+	// Begin PlayerController interface
+	virtual void PlayerTick(float DeltaTime) override;
+	void OnPossess(APawn* InPawn) override;
+	// End PlayerController interface
+
+	/** True if the controlled character should navigate to the mouse cursor. */
+	uint32 bMoveToMouseCursor : 1;
+
+	/** Currently selected vehicle on which to perform actions */
+	UPROPERTY()	
+	AVehicleUnit* SelectedVehicle = nullptr;
+
+private:
+
 	/** Direction to move the camera vertically */
 	int32 cameraMoveVert = 0;
 
@@ -126,9 +108,6 @@ private:
 
 	/** Are we in the state of targetting with a unit? */
 	bool bIsTargeting = false;
-
-	/** ID of the currently active player */
-	int32 playerId = 0;
 
 	/** Queue of movements to be performed by selected unit when moves confirmed */
 	TDeque<ATileActor*> MovementQueue;

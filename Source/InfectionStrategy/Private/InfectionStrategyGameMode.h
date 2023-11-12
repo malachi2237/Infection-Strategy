@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "SecondaryLocalController.h"
 #include "InfectionStrategyGameMode.generated.h"
 
-class UTileSystem;
+class ATileSystem;
 class AVehicleUnit;
 
 /* The default game mode for the project. Establishes rules and Pawns. */
@@ -20,33 +21,26 @@ public:
 
 	virtual void BeginPlay() override;
 
-	/**
-	 * Ends the current player's turn for all Actors.
-	 * @return The Id of the player whose turn is next.
-	 */
-	UFUNCTION(BlueprintCallable)
-	int32 EndTurn();
-	
-	/** The current UTileSystem in use. */
-	UPROPERTY()
-	UTileSystem* TileSystem = nullptr;
+protected:
+	virtual void PreInitializeComponents() override;
+	virtual void PostInitializeComponents() override;
 
-private:
-	/** Player whose turn it currently is */
-	int32 ActivePlayerId = 0;
+	/** The player controller class that should be used for any additional local players */
+	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = InfectionStrategyClasses)
+		TSubclassOf<ASecondaryLocalController> SecondPlayerControllerClass;
 
-	/** Count of the current turn. Increments after both players play their turns. */
-	uint32 TurnNumber = 1;
-
-	/** Collection of units being used*/
-	UPROPERTY()
-	TArray<TWeakObjectPtr<AVehicleUnit>> Vehicles;
+	UPROPERTY(EditAnywhere, NoClear, BlueprintReadOnly, Category = InfectionStrategyClasses)
+		TSubclassOf<ATileSystem> TileSystemClass;
 
 	/** Template used to spawn units.
 	 * Will be removed when players can select their own unit types
 	 */
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AVehicleUnit> VehicleTemplate;
+
+private:
+	UFUNCTION()
+		virtual void CheckScoreForWinner(const int32 playerOneScore, const int32 playerTwoScore);
 };
 
 

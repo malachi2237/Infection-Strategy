@@ -30,4 +30,6 @@ public:
 	 * @param playerId - Id of the player whose turn is ending
 	*/
 	virtual void OnTurnEnd(const int32 playerId) = 0;
+
+	virtual void OnMatchEnd(const int32 winnerId) = 0;
 };

@@ -111,7 +111,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int32 MaxMovement = 10;
 
-//** Number of tiles moved this turn */
+	//** Number of tiles moved this turn */
 	int32 CurrentMovement = 0;
 
 	/** Is the vehicle able to attack this turn? */
